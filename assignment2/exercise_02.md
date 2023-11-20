@@ -16,7 +16,7 @@ image = cv2.resize(image, (448, 336))
 cv2.imshow("Original", image)
 ```
 
-![Alt text](image.png)
+![Alt text](img/image.png)
 
 # 2. (4 points) Apply a Gabor filter at 4 orientations. Combine (use the maximum value for each pixel) the four orientations into one filtered image and show the result. Play with the parameters of the filter and show how the filter works with 3 different parameter set values
 
@@ -57,19 +57,19 @@ def gabor_filter_and_combine_images(image, ksize, sigma, lambd, gamma, psi):
     cv2.imshow(filename, combined_image)
 ```
 
-![Alt text](image-1.png)
+![Alt text](img/image-1.png)
 
 ```python
 {"ksize": 3, "sigma": 0.5, "lambd": 2, "gamma": 0.5, "psi": np.pi/2},
 ```
 
-![Alt text](image-2.png)
+![Alt text](img/image-2.png)
 
 ```python
 {"ksize": 5, "sigma": 1, "lambd": 0.5, "gamma": np.pi/4, "psi": np.pi/2},
 ```
 
-![Alt text](image-3.png)
+![Alt text](img/image-3.png)
 
 ```python
 {"ksize": 7, "sigma": 2, "lambd": 0.5, "gamma": 2, "psi": np.pi/2}
@@ -91,13 +91,13 @@ edge = cv2.Canny(image,
 cv2.imshow('edge', edge)
 ```
 
-![Alt text](image-4.png)
+![Alt text](img/image-4.png)
 
 # 5. (5 points) Extract features from the images using the SIFT and HOG descriptors
 
 ## a. Show the results, compare and comment on both descriptors
 
-![sift](image-5.png)
+![sift](img/image-5.png)
 
 ## b. Briefly describe in your own words the HOG descriptor (min. half a page, include mathematical expressions)
 
