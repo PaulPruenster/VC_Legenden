@@ -10,7 +10,7 @@ geometry:
 
 # 1. (2 points) Take a picture of a cluttered scenario with the presence of several objects, resize the picture as to be 448x336 pixels. Read and show the picture using OpenCV
 
-```{ .python .numberLines }
+```python
 image = cv2.imread("image.jpg", 0)
 image = cv2.resize(image, (448, 336))
 cv2.imshow("Original", image)
@@ -124,7 +124,6 @@ applying them to the image. The derivation matrixes are:
 
 ![gradients](image-3.png)
 
-
 Now for each pixel the gradient magnitude and orientation is computed using pixel differences. This also
 applies the matrices from above.
 
@@ -133,3 +132,32 @@ applies the matrices from above.
 Now the picture is divided into cells. Each pixel within the cell influences the histogram with its angle weighted with its magnitude. Then 4 of these cells get normalized into a block descriptor. The normalization function can be the L2 norm (below), with v being the 4 histograms of the block and num a small number to not divide by 0. The features computed by the progress are displayed as an overlay in the image below. They can be used as a input into some machine learning algorithm for object recognition.
 
 ![l2norm](image-2.png)
+
+Example:
+
+![Alt text](image-8.png)
+
+```python
+import matplotlib.pyplot as plt
+
+from skimage.feature import hog
+from skimage import exposure, io
+
+image = io.imread("paris.jpg")
+
+fd, hog_image = hog(image, orientations=8, pixels_per_cell=(16, 16),
+                    cells_per_block=(1, 1), visualize=True, channel_axis=-1)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
+
+ax1.axis('off')
+ax1.imshow(image, cmap=plt.cm.gray)
+ax1.set_title('Input image')
+
+hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
+
+ax2.axis('off')
+ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
+ax2.set_title('Histogram of Oriented Gradients')
+plt.show()
+```
