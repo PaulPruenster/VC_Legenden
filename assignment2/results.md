@@ -57,6 +57,8 @@ def gabor_filter_and_combine_images(image, ksize, sigma, lambd, gamma, psi):
     cv2.imshow(filename, combined_image)
 ```
 
+### Results:
+
 ![Alt text](img/image-1.png)
 
 ```python
@@ -91,6 +93,8 @@ edge = cv2.Canny(image,
 cv2.imshow('edge', edge)
 ```
 
+The edges are way more defined in this filter, if you zoom in you can see that the border is very harsh, the white pixels are 255 and the black ones 0 and no values on between.
+
 ![Alt text](img/image-4.png)
 
 # 5. (5 points) Extract features from the images using the SIFT and HOG descriptors
@@ -101,30 +105,9 @@ cv2.imshow('edge', edge)
 
 ## b. Briefly describe in your own words the HOG descriptor (min. half a page, include mathematical expressions)
 
-The Histogram of Oriented Gradients (HOG) descriptor is a powerful feature extraction technique widely used in computer vision applications, particularly for object detection and classification. It captures the shape and appearance of objects by analyzing the distribution of gradient orientations in localized regions of an image. The HOG descriptor is robust to changes in illumination and partial occlusions, making it a valuable tool for real-world applications.
+### What it is
 
-The HOG descriptor extraction process involves the following steps:
-
-1. **Image Normalization:** The input image is normalized to a fixed contrast level to minimize the impact of illumination variations.
-
-2. **Gradient Computation:** Gradients are calculated for each pixel in the image using the horizontal and vertical components of the image intensity values. The magnitude and direction of the gradient at each pixel are computed using the following formulas:
-
-```
-Gx = Ix2 - Iy2
-Gy = 2 * Ix * Iy
-Magnitude = sqrt(Gx^2 + Gy^2)
-Direction = arctan(Gy / Gx)
-```
-
-3. **Cell Division:** The image is divided into small rectangular cells, typically 8x8 pixels in size. These cells act as localized regions for analyzing gradient orientations.
-
-4. **Gradient Orientation Histogram:** For each cell, the gradient directions of all pixels within the cell are quantized into a fixed number of bins, typically 9 bins covering a range of 180 degrees. The number of pixels falling into each orientation bin is counted, forming a histogram of gradient orientations.
-
-5. **Block Normalization:** To compensate for variations in local contrast, cells are grouped into larger rectangular blocks, typically 2x2 cells in size. The histograms of all cells within a block are normalized using L2-norm. This normalization ensures that the descriptor is not overly sensitive to local intensity changes.
-
-6. **Feature Vector Construction:** The normalized histograms from all blocks are concatenated into a single feature vector, representing the overall gradient orientation distribution of the image. This feature vector is used as input for machine learning algorithms for object detection and classification.
-
-The HOG descriptor has gained popularity in computer vision due to its effectiveness and computational efficiency. It has been successfully applied to a wide range of applications, including:
+The Histogram of Oriented Gradients (HOG) descriptor is a powerful feature extraction technique widely used in computer vision applications, particularly for object detection and classification. It captures the shape and appearance of objects by analyzing the distribution of gradient orientations in localized regions of an image. It has been successfully applied to a wide range of applications, including:
 
 - Pedestrian detection
 - Face detection
@@ -133,3 +116,20 @@ The HOG descriptor has gained popularity in computer vision due to its effective
 - Image classification
 
 The HOG descriptor's robustness to illumination and partial occlusions makes it a valuable tool for real-world applications where these factors are often present. Its computational efficiency allows for real-time object detection and classification in various scenarios.
+
+### How it works
+
+The first step is to compute the gradients. This can be done by using two derivation matrixes and
+applying them to the image. The derivation matrixes are:
+
+![gradients](image-3.png)
+
+
+Now for each pixel the gradient magnitude and orientation is computed using pixel differences. This also
+applies the matrices from above.
+
+![pixel](image-4.png)
+
+Now the picture is divided into cells. Each pixel within the cell influences the histogram with its angle weighted with its magnitude. Then 4 of these cells get normalized into a block descriptor. The normalization function can be the L2 norm (below), with v being the 4 histograms of the block and num a small number to not divide by 0. The features computed by the progress are displayed as an overlay in the image below. They can be used as a input into some machine learning algorithm for object recognition.
+
+![l2norm](image-2.png)
