@@ -7,6 +7,8 @@
 #include "mygl/camera.h"
 #include "water.h"
 
+#define NUM_CUBES 7
+
 /* translation and color for the water plane */
 namespace waterPlane
 {
@@ -14,12 +16,21 @@ const Vector4D color = {0.0f, 0.0f, 0.35f, 1.0f};
 const Matrix4D trans = Matrix4D::identity();
 }
 
-/* translation and scale for the scaled cube */
-namespace scaledCube
+/* structure for cube */
+struct Cube
 {
-const Matrix4D scale = Matrix4D::scale(2.0f, 2.0f, 2.0f);
-const Matrix4D trans = Matrix4D::translation({0.0f, 4.0f, 0.0f});
-}
+const Matrix4D scale;
+const Matrix4D trans;
+};
+
+Cube boat[NUM_CUBES] = {{Matrix4D::scale(1.25f, 0.9f, 3.5f), Matrix4D::translation({0.0f, 0.0f, 0.0f})},
+                {Matrix4D::scale(0.375f, 0.75f, 0.625f), Matrix4D::translation({0.0f, 1.65f, -1.5f})},
+                {Matrix4D::scale(0.15f, 1.5f, 0.15f), Matrix4D::translation({0.0f, 2.4f, 1.0f})},
+                {Matrix4D::scale(1.25f, 0.3f, 0.15f), Matrix4D::translation({0.0f, 1.2f, 3.35f})},
+                {Matrix4D::scale(1.25f, 0.3f, 0.15f), Matrix4D::translation({0.0f, 1.2f, -3.35f})},
+                {Matrix4D::scale(0.15f, 0.3f, 3.2f), Matrix4D::translation({1.1f, 1.2f, 0.0f})},
+                {Matrix4D::scale(0.15f, 0.3f, 3.2f), Matrix4D::translation({-1.1f, 1.2f, 0.0f})}
+               };
 
 /* struct holding all necessary state variables for scene */
 struct
@@ -34,10 +45,10 @@ struct
     Matrix4D waterModelMatrix;
 
     /* cube mesh and transformations */
-    Mesh cubeMesh;
-    Matrix4D cubeScalingMatrix;
-    Matrix4D cubeTranslationMatrix;
-    Matrix4D cubeTransformationMatrix;
+    Mesh cubeMesh[NUM_CUBES];
+    Matrix4D cubeScalingMatrix[NUM_CUBES];
+    Matrix4D cubeTranslationMatrix[NUM_CUBES];
+    Matrix4D cubeTransformationMatrix[NUM_CUBES];
     float cubeSpinRadPerSecond;
 
     /* shader */
@@ -135,16 +146,16 @@ void sceneInit(float width, float height)
     sScene.zoomSpeedMultiplier = 0.05f;
 
     /* setup objects in scene and create opengl buffers for meshes */
-    sScene.cubeMesh = meshCreate(cube::vertices, cube::indices, GL_STATIC_DRAW, GL_STATIC_DRAW);
+    for (int i = 0; i < NUM_CUBES; i++) {
+        sScene.cubeMesh[i] = meshCreate(cube::vertices, cube::indices, GL_STATIC_DRAW, GL_STATIC_DRAW);
+        sScene.cubeScalingMatrix[i] = boat[i].scale;
+        sScene.cubeTranslationMatrix[i] = boat[i].trans;
+        sScene.cubeTransformationMatrix[i] = Matrix4D::identity();
+    }
     sScene.water = waterCreate(waterPlane::color);
 
     /* setup transformation matrices for objects */
     sScene.waterModelMatrix = waterPlane::trans;
-
-    sScene.cubeScalingMatrix = scaledCube::scale;
-    sScene.cubeTranslationMatrix = scaledCube::trans;
-
-    sScene.cubeTransformationMatrix = Matrix4D::identity();
 
     sScene.cubeSpinRadPerSecond = M_PI / 2.0f;
 
@@ -173,7 +184,7 @@ void sceneUpdate(float dt)
 
     /* udpate cube transformation matrix to include new rotation if one of the keys was pressed */
     if (rotationDirX != 0 || rotationDirY != 0) {
-        sScene.cubeTransformationMatrix = Matrix4D::rotationY(rotationDirY * sScene.cubeSpinRadPerSecond * dt) * Matrix4D::rotationX(rotationDirX * sScene.cubeSpinRadPerSecond * dt) * sScene.cubeTransformationMatrix;
+        sScene.cubeTransformationMatrix[0] = Matrix4D::rotationY(rotationDirY * sScene.cubeSpinRadPerSecond * dt) * Matrix4D::rotationX(rotationDirX * sScene.cubeSpinRadPerSecond * dt) * sScene.cubeTransformationMatrix[0];
     }
 }
 
@@ -196,10 +207,12 @@ void sceneDraw()
         glBindVertexArray(sScene.water.mesh.vao);
         glDrawElements(GL_TRIANGLES, sScene.water.mesh.size_ibo, GL_UNSIGNED_INT, nullptr);
 
-        /* draw cube, requires to calculate the final model matrix from all transformations */
-        shaderUniform(sScene.shaderColor, "uModel", sScene.cubeTranslationMatrix * sScene.cubeTransformationMatrix * sScene.cubeScalingMatrix);
-        glBindVertexArray(sScene.cubeMesh.vao);
-        glDrawElements(GL_TRIANGLES, sScene.cubeMesh.size_ibo, GL_UNSIGNED_INT, nullptr);
+        for (int i = 0; i < NUM_CUBES; i++) {
+            /* draw cube, requires to calculate the final model matrix from all transformations */
+            shaderUniform(sScene.shaderColor, "uModel", sScene.cubeTranslationMatrix[i] * sScene.cubeTransformationMatrix[i] * sScene.cubeScalingMatrix[i]);
+            glBindVertexArray(sScene.cubeMesh[i].vao);
+            glDrawElements(GL_TRIANGLES, sScene.cubeMesh[i].size_ibo, GL_UNSIGNED_INT, nullptr);
+        }
     }
     glCheckError();
 
@@ -257,7 +270,9 @@ int main(int argc, char** argv)
     /* delete opengl shader and buffers */
     shaderDelete(sScene.shaderColor);
     waterDelete(sScene.water);
-    meshDelete(sScene.cubeMesh);
+    for (int i = 0; i < NUM_CUBES; i++) {
+        meshDelete(sScene.cubeMesh[i]);
+    }
 
     /* cleanup glfw/glcontext */
     windowDelete(window);
