@@ -49,7 +49,10 @@ struct
     Matrix4D cubeScalingMatrix[NUM_CUBES];
     Matrix4D cubeTranslationMatrix[NUM_CUBES];
     Matrix4D cubeTransformationMatrix[NUM_CUBES];
-    float cubeSpinRadPerSecond;
+    Matrix4D boatTranslationMatrix;
+    float boatVelocity;
+    float boatTurningSpeed;
+    Vector3D boatFront;
 
     /* shader */
     ShaderProgram shaderColor;
@@ -152,12 +155,15 @@ void sceneInit(float width, float height)
         sScene.cubeTranslationMatrix[i] = boat[i].trans;
         sScene.cubeTransformationMatrix[i] = Matrix4D::identity();
     }
+    sScene.boatTranslationMatrix = Matrix4D::translation({0.0f, 0.0f, 0.0f});
+    sScene.boatFront = Vector3D(0.0f, 0.0f, 1.0f);
     sScene.water = waterCreate(waterPlane::color);
 
     /* setup transformation matrices for objects */
     sScene.waterModelMatrix = waterPlane::trans;
 
-    sScene.cubeSpinRadPerSecond = M_PI / 2.0f;
+    sScene.boatVelocity = 2.0f;
+    sScene.boatTurningSpeed = 0.01f;
 
     /* load shader from file */
     sScene.shaderColor = shaderLoad("shader/default.vert", "shader/default.frag");
@@ -166,25 +172,28 @@ void sceneInit(float width, float height)
 /* function to move and update objects in scene (e.g., rotate cube according to user input) */
 void sceneUpdate(float dt)
 {
-    /* if 'w' or 's' pressed, cube should rotate around x axis */
-    int rotationDirX = 0;
+    /* if 'w' or 's' pressed, boat should move forward or backwards */
+    int forward = 0;
     if (sInput.buttonPressed[0]) {
-        rotationDirX = -1;
+        forward = 1;
     } else if (sInput.buttonPressed[1]) {
-        rotationDirX = 1;
+        forward = -1;
     }
 
-    /* if 'a' or 'd' pressed, cube should rotate around y axis */
-    int rotationDirY = 0;
+    /* if 'a' or 'd' pressed, boat should move left or right */
+    int left = 0;
     if (sInput.buttonPressed[2]) {
-        rotationDirY = -1;
+        left = 1;
     } else if (sInput.buttonPressed[3]) {
-        rotationDirY = 1;
+        left = -1;
     }
 
     /* udpate cube transformation matrix to include new rotation if one of the keys was pressed */
-    if (rotationDirX != 0 || rotationDirY != 0) {
-        sScene.cubeTransformationMatrix[0] = Matrix4D::rotationY(rotationDirY * sScene.cubeSpinRadPerSecond * dt) * Matrix4D::rotationX(rotationDirX * sScene.cubeSpinRadPerSecond * dt) * sScene.cubeTransformationMatrix[0];
+    if (forward != 0) {
+        if (left != 0) {
+            sScene.boatFront = Matrix3D::rotationY(left * sScene.boatTurningSpeed)* sScene.boatFront;
+        }
+        sScene.boatTranslationMatrix = sScene.boatTranslationMatrix * Matrix4D::translation(forward * sScene.boatVelocity * dt * sScene.boatFront);
     }
 }
 
@@ -209,7 +218,7 @@ void sceneDraw()
 
         for (int i = 0; i < NUM_CUBES; i++) {
             /* draw cube, requires to calculate the final model matrix from all transformations */
-            shaderUniform(sScene.shaderColor, "uModel", sScene.cubeTranslationMatrix[i] * sScene.cubeTransformationMatrix[i] * sScene.cubeScalingMatrix[i]);
+            shaderUniform(sScene.shaderColor, "uModel", sScene.boatTranslationMatrix * sScene.cubeTranslationMatrix[i] * sScene.cubeTransformationMatrix[i] * sScene.cubeScalingMatrix[i]);
             glBindVertexArray(sScene.cubeMesh[i].vao);
             glDrawElements(GL_TRIANGLES, sScene.cubeMesh[i].size_ibo, GL_UNSIGNED_INT, nullptr);
         }
