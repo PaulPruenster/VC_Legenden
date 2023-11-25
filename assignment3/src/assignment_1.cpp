@@ -50,6 +50,8 @@ struct
     Matrix4D cubeTranslationMatrix[NUM_CUBES];
     Matrix4D cubeTransformationMatrix[NUM_CUBES];
     Matrix4D boatTranslationMatrix;
+    Matrix4D boatTransformationMatrix;
+    float boatTurningRadian;
     float boatVelocity;
     float boatTurningSpeed;
     Vector3D boatFront;
@@ -157,13 +159,15 @@ void sceneInit(float width, float height)
     }
     sScene.boatTranslationMatrix = Matrix4D::translation({0.0f, 0.0f, 0.0f});
     sScene.boatFront = Vector3D(0.0f, 0.0f, 1.0f);
+    sScene.boatTransformationMatrix = Matrix4D::rotationY(0);
+    sScene.boatTurningRadian = 0.0f;
     sScene.water = waterCreate(waterPlane::color);
 
     /* setup transformation matrices for objects */
     sScene.waterModelMatrix = waterPlane::trans;
 
     sScene.boatVelocity = 2.0f;
-    sScene.boatTurningSpeed = 0.01f;
+    sScene.boatTurningSpeed = 0.005f;
 
     /* load shader from file */
     sScene.shaderColor = shaderLoad("shader/default.vert", "shader/default.frag");
@@ -191,7 +195,9 @@ void sceneUpdate(float dt)
     /* udpate cube transformation matrix to include new rotation if one of the keys was pressed */
     if (forward != 0) {
         if (left != 0) {
-            sScene.boatFront = Matrix3D::rotationY(left * sScene.boatTurningSpeed)* sScene.boatFront;
+            sScene.boatTurningRadian += left*sScene.boatTurningSpeed;
+            sScene.boatFront = Matrix3D::rotationY(sScene.boatTurningRadian)* Vector3D(0.0f, 0.0f, 1.0f);
+            sScene.boatTransformationMatrix = Matrix4D::rotationY(sScene.boatTurningRadian);
         }
         sScene.boatTranslationMatrix = sScene.boatTranslationMatrix * Matrix4D::translation(forward * sScene.boatVelocity * dt * sScene.boatFront);
     }
@@ -218,7 +224,7 @@ void sceneDraw()
 
         for (int i = 0; i < NUM_CUBES; i++) {
             /* draw cube, requires to calculate the final model matrix from all transformations */
-            shaderUniform(sScene.shaderColor, "uModel", sScene.boatTranslationMatrix * sScene.cubeTranslationMatrix[i] * sScene.cubeTransformationMatrix[i] * sScene.cubeScalingMatrix[i]);
+            shaderUniform(sScene.shaderColor, "uModel", sScene.boatTranslationMatrix * sScene.boatTransformationMatrix * sScene.cubeTranslationMatrix[i] * sScene.cubeTransformationMatrix[i] * sScene.cubeScalingMatrix[i]);
             glBindVertexArray(sScene.cubeMesh[i].vao);
             glDrawElements(GL_TRIANGLES, sScene.cubeMesh[i].size_ibo, GL_UNSIGNED_INT, nullptr);
         }
