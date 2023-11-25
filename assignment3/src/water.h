@@ -49,6 +49,12 @@ struct Water
  */
 Water waterCreate(const Vector4D &color);
 
+/**
+ * @brief Updated the water mesh to have a wave like motion.
+ *
+ * @param water Water to update.
+ * @param time delta time.
+ */
 void waterUpdate(Water &water, float time);
 
 /**
