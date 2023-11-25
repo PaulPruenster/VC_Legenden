@@ -23,16 +23,15 @@ Water waterCreate(const Vector4D &color)
 
 void waterUpdate(Water &water, float time)
 {
+    WaveParams *params = WaterSim().parameter;
     for (unsigned i = 0; i < water.vertices.size(); i++)
     {
-        WaterSim ws = WaterSim();
-
         // Sum the displacements from all the waves.
         float displacement = 0.0f;
-        for (int i = 0; i < sizeof(ws.parameter) / sizeof(WaveParams); i++)
+        for (int i = 0; i < sizeof(params) / sizeof(WaveParams); i++)
         {
             // Compute the displacement from this wave.
-            WaveParams p = ws.parameter[i];
+            WaveParams p = params[i];
             float waveDisplacement = p.amplitude * sin(p.omega * (water.vertices[i].pos.y * p.direction.y) + time * p.phi);
 
             // Add the displacement from this wave to the total displacement.
