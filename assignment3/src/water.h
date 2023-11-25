@@ -17,10 +17,10 @@ struct WaterSim
      * Parameters for the 3 wave functions for the water simulation
      */
     WaveParams parameter[3] =
-    {
-        { 0.6f,  0.5f,  0.25f, normalize(Vector2D{1.0f,  1.0f}) },
-        { 0.7f,  0.25f, 0.1f,  normalize(Vector2D{1.0f, -1.0f}) },
-        { 0.1f,  0.9f,  0.9f,  normalize(Vector2D{-1.0f, 0.0f}) },
+        {
+            {0.6f, 0.5f, 0.25f, normalize(Vector2D{1.0f, 1.0f})},
+            {0.7f, 0.25f, 0.1f, normalize(Vector2D{1.0f, -1.0f})},
+            {0.1f, 0.9f, 0.9f, normalize(Vector2D{-1.0f, 0.0f})},
     };
 
     float accumTime = 0.0f;
@@ -50,8 +50,16 @@ struct Water
 Water waterCreate(const Vector4D &color);
 
 /**
+ * @brief Updated the water mesh to have a wave like motion.
+ *
+ * @param water Water to update.
+ * @param time delta time.
+ */
+void waterUpdate(Water &water, float time);
+
+/**
  * @brief Cleanup and delete all OpenGL buffers of the water mesh. Has to be called for each water after it is not used anymore.
  *
  * @param water Water to delete.
  */
-void waterDelete(Water& water);
+void waterDelete(Water &water);
