@@ -25,29 +25,23 @@ void waterUpdate(Water &water, float time)
 {
     for (unsigned i = 0; i < water.vertices.size(); i++)
     {
-        float displacement = computeDisplacement(water.vertices[i], time);
+        WaterSim ws = WaterSim();
+
+        // Sum the displacements from all the waves.
+        float displacement = 0.0f;
+        for (int i = 0; i < sizeof(ws.parameter) / sizeof(WaveParams); i++)
+        {
+            // Compute the displacement from this wave.
+            WaveParams p = ws.parameter[i];
+            float waveDisplacement = p.amplitude * sin(p.omega * (water.vertices[i].pos.y * p.direction.y) + time * p.phi);
+
+            // Add the displacement from this wave to the total displacement.
+            displacement += waveDisplacement;
+        }
+
         water.vertices[i].pos.y += displacement;
     }
     time += 0.01f;
-}
-
-float computeDisplacement(Vertex vertex, float time)
-{
-    WaterSim ws = WaterSim();
-
-    // Sum the displacements from all the waves.
-    float displacement = 0.0f;
-    for (int i = 0; i < sizeof(ws.parameter) / sizeof(WaveParams); i++)
-    {
-        // Compute the displacement from this wave.
-        WaveParams p = ws.parameter[i];
-        float waveDisplacement = p.amplitude * sin(p.omega * (vertex.pos.y * p.direction.y + time) + p.phi);
-
-        // Add the displacement from this wave to the total displacement.
-        displacement += waveDisplacement;
-    }
-
-    return displacement;
 }
 
 void waterDelete(Water &water) { meshDelete(water.mesh); }
