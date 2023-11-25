@@ -21,16 +21,18 @@ struct Cube
 {
 const Matrix4D scale;
 const Matrix4D trans;
+const Vector4D color;
 };
 
-Cube boat[NUM_CUBES] = {{Matrix4D::scale(1.25f, 0.9f, 3.5f), Matrix4D::translation({0.0f, 0.0f, 0.0f})},
-                {Matrix4D::scale(0.375f, 0.75f, 0.625f), Matrix4D::translation({0.0f, 1.65f, -1.5f})},
-                {Matrix4D::scale(0.15f, 1.5f, 0.15f), Matrix4D::translation({0.0f, 2.4f, 1.0f})},
-                {Matrix4D::scale(1.25f, 0.3f, 0.15f), Matrix4D::translation({0.0f, 1.2f, 3.35f})},
-                {Matrix4D::scale(1.25f, 0.3f, 0.15f), Matrix4D::translation({0.0f, 1.2f, -3.35f})},
-                {Matrix4D::scale(0.15f, 0.3f, 3.2f), Matrix4D::translation({1.1f, 1.2f, 0.0f})},
-                {Matrix4D::scale(0.15f, 0.3f, 3.2f), Matrix4D::translation({-1.1f, 1.2f, 0.0f})}
+Cube boat[NUM_CUBES] = {{Matrix4D::scale(1.25f, 0.9f, 3.5f), Matrix4D::translation({0.0f, 0.0f, 0.0f}), { 91.0/255.0, 58.0/255.0, 41.0/255.0 }},
+                {Matrix4D::scale(0.375f, 0.75f, 0.625f), Matrix4D::translation({0.0f, 1.65f, -1.5f}), { 200.0/255.0, 200.0/255.0, 200.0/255.0 }},
+                {Matrix4D::scale(0.15f, 1.5f, 0.15f), Matrix4D::translation({0.0f, 2.4f, 1.0f}), { 44.0/255.0, 28.0/255.0, 20.0/255.0 }},
+                {Matrix4D::scale(1.25f, 0.3f, 0.15f), Matrix4D::translation({0.0f, 1.2f, 3.35f}), { 156.0/255.0, 107.0/255.0, 48.0/255.0 }},
+                {Matrix4D::scale(1.25f, 0.3f, 0.15f), Matrix4D::translation({0.0f, 1.2f, -3.35f}), { 156.0/255.0, 107.0/255.0, 48.0/255.0 }},
+                {Matrix4D::scale(0.15f, 0.3f, 3.2f), Matrix4D::translation({1.1f, 1.2f, 0.0f}), { 156.0/255.0, 107.0/255.0, 48.0/255.0 }},
+                {Matrix4D::scale(0.15f, 0.3f, 3.2f), Matrix4D::translation({-1.1f, 1.2f, 0.0f}), { 156.0/255.0, 107.0/255.0, 48.0/255.0 }}
                };
+
 
 /* struct holding all necessary state variables for scene */
 struct
@@ -152,7 +154,7 @@ void sceneInit(float width, float height)
 
     /* setup objects in scene and create opengl buffers for meshes */
     for (int i = 0; i < NUM_CUBES; i++) {
-        sScene.cubeMesh[i] = meshCreate(cube::vertices, cube::indices, GL_STATIC_DRAW, GL_STATIC_DRAW);
+        sScene.cubeMesh[i] = meshCreate(cube::verticesColored(boat[i].color), cube::indices, GL_STATIC_DRAW, GL_STATIC_DRAW);
         sScene.cubeScalingMatrix[i] = boat[i].scale;
         sScene.cubeTranslationMatrix[i] = boat[i].trans;
         sScene.cubeTransformationMatrix[i] = Matrix4D::identity();
