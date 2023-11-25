@@ -28,19 +28,19 @@ void waterUpdate(Water &water, float time)
     {
         // Sum the displacements from all the waves.
         float displacement = 0.0f;
-        for (int i = 0; i < sizeof(params) / sizeof(WaveParams); i++)
+        for (int j = 0; j < 3; j++)
         {
             // Compute the displacement from this wave.
-            WaveParams p = params[i];
-            float waveDisplacement = p.amplitude * sin(p.omega * (water.vertices[i].pos.y * p.direction.y) + time * p.phi);
+            WaveParams p = params[j];
+            float waveDisplacement = p.amplitude * sin(p.omega * (water.vertices[i].pos.x * p.direction.x + water.vertices[i].pos.z * p.direction.y) + time * p.phi);
 
             // Add the displacement from this wave to the total displacement.
             displacement += waveDisplacement;
         }
-
-        water.vertices[i].pos.y += displacement;
+        water.vertices[i].pos.y = displacement;
     }
-    time += 0.01f;
+    meshDelete(water.mesh);
+    water.mesh = meshCreate(water.vertices, grid::indices, GL_DYNAMIC_DRAW, GL_STATIC_DRAW);
 }
 
 void waterDelete(Water &water) { meshDelete(water.mesh); }

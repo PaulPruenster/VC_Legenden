@@ -176,7 +176,7 @@ void sceneInit(float width, float height)
 }
 
 /* function to move and update objects in scene (e.g., rotate cube according to user input) */
-void sceneUpdate(float dt)
+void sceneUpdate(float dt, float t)
 {
     /* if 'w' or 's' pressed, boat should move forward or backwards */
     int forward = 0;
@@ -213,7 +213,7 @@ void sceneUpdate(float dt)
     }
 
     // water stuff
-    waterUpdate(sScene.water, dt);
+    waterUpdate(sScene.water, t);
 }
 
 /* function to draw all objects in the scene */
@@ -276,6 +276,7 @@ int main(int argc, char **argv)
 
     /*-------------- main loop ----------------*/
     double timeStamp = glfwGetTime();
+    double timeStampZero = timeStamp;
     double timeStampNew = 0.0;
 
     /* loop until user closes window */
@@ -286,7 +287,7 @@ int main(int argc, char **argv)
 
         /* update model matrix of cube */
         timeStampNew = glfwGetTime();
-        sceneUpdate(timeStampNew - timeStamp);
+        sceneUpdate(timeStampNew - timeStamp, timeStampNew - timeStampZero);
         timeStamp = timeStampNew;
 
         /* draw all objects in the scene */
