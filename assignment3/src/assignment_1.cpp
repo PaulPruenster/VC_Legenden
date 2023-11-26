@@ -37,7 +37,7 @@ struct
     /* camera */
     Camera camera;
     float zoomSpeedMultiplier;
-    int cameraMode;  /* 1 -> initial camera mode, 2 -> Third person camera */
+    int cameraMode; /* 1 -> initial camera mode, 2 -> Third person camera */
 
     /* water */
     WaterSim waterSim;
@@ -104,11 +104,11 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
         sInput.buttonPressed[3] = (action == GLFW_PRESS || action == GLFW_REPEAT);
     }
     /* input for camera modes */
-    if(key == GLFW_KEY_1)
+    if (key == GLFW_KEY_1)
     {
         sInput.buttonPressed[4] = (action == GLFW_PRESS || action == GLFW_REPEAT);
     }
-    if(key == GLFW_KEY_2)
+    if (key == GLFW_KEY_2)
     {
         sInput.buttonPressed[5] = (action == GLFW_PRESS || action == GLFW_REPEAT);
     }
@@ -185,7 +185,8 @@ void sceneInit(float width, float height)
     sScene.shaderColor = shaderLoad("shader/default.vert", "shader/default.frag");
 }
 
-bool boatIsMoving() {
+bool boatIsMoving()
+{
     return (sInput.buttonPressed[0] || sInput.buttonPressed[1]);
 }
 /* function to move and update objects in scene (e.g., rotate cube according to user input) */
@@ -214,26 +215,31 @@ void sceneUpdate(float dt, float t)
     }
 
     /* udpate cube transformation matrix to include new rotation if one of the keys was pressed */
-    if (forward != 0) {
+    if (forward != 0)
+    {
         Vector3D oldBoatPosition = sScene.boatTranslationMatrix[3];
-        if (left != 0) {
-            sScene.boatTurningRadian += left*sScene.boatTurningSpeed;
-            sScene.boatFront = Matrix3D::rotationY(sScene.boatTurningRadian)* Vector3D(0.0f, 0.0f, 1.0f);
+        if (left != 0)
+        {
+            sScene.boatTurningRadian += left * sScene.boatTurningSpeed;
+            sScene.boatFront = Matrix3D::rotationY(sScene.boatTurningRadian) * Vector3D(0.0f, 0.0f, 1.0f);
             sScene.boatTransformationMatrix = Matrix4D::rotationY(sScene.boatTurningRadian);
         }
         sScene.boatTranslationMatrix = sScene.boatTranslationMatrix * Matrix4D::translation(forward * sScene.boatVelocity * dt * sScene.boatFront);
-        
-        if (sScene.cameraMode == 2) {
+
+        if (sScene.cameraMode == 2)
+        {
             Vector3D newBoatPosition = sScene.boatTranslationMatrix[3];
             Vector3D boatMovement = newBoatPosition - oldBoatPosition;
             sScene.camera.position = sScene.camera.position + boatMovement;
             sScene.camera.lookAt = sScene.boatTranslationMatrix[3];
         }
     }
-    if (sInput.buttonPressed[4]) {
+    if (sInput.buttonPressed[4])
+    {
         sScene.cameraMode = 1;
     }
-    if (sInput.buttonPressed[5]) {
+    if (sInput.buttonPressed[5])
+    {
         sScene.cameraMode = 2;
     }
 
@@ -260,14 +266,12 @@ void sceneUpdate(float dt, float t)
     // Calculate tringle angle on z and x achse
     float angleZ = atan2(PointB.y - PointA.y, PointB.x - PointA.x);
     float angleX = atan2(PointC.y - PointA.y, PointC.z - PointA.z);
-    //  print angles in terminal 
+    //  print angles in terminal
     // std::cout << "angleZ: " << angleZ << std::endl;
-    
-    //set boat rotation to the angle
-    sScene.boatTransformationMatrix = Matrix4D::rotationY(angleZ);
+
+    // set boat rotation to the angle
+    sScene.boatTransformationMatrix = Matrix4D::rotationZ(angleZ);
     sScene.boatTransformationMatrix = sScene.boatTransformationMatrix * Matrix4D::rotationX(angleX);
-
-
 }
 
 /* function to draw all objects in the scene */
