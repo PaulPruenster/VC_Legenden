@@ -43,4 +43,21 @@ void waterUpdate(Water &water, float time)
     water.mesh = meshCreate(water.vertices, grid::indices, GL_DYNAMIC_DRAW, GL_STATIC_DRAW);
 }
 
+float calculateHeightAtPosition(float time, float x, float z)
+{
+    WaveParams *params = WaterSim().parameter;
+
+    float displacement = 0.0f;
+    for (int j = 0; j < sizeof(params) / sizeof(WaveParams *); j++)
+    {
+        // Compute the displacement from this wave.
+        WaveParams p = params[j];
+        float waveDisplacement = p.amplitude * sin(p.omega * (x * p.direction.x + z * p.direction.y) + time * p.phi);
+
+        // Add the displacement from this wave to the total displacement.
+        displacement += waveDisplacement;
+    }
+    return displacement;
+}
+
 void waterDelete(Water &water) { meshDelete(water.mesh); }

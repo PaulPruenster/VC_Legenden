@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <iostream>
-
 #include "mygl/shader.h"
 #include "mygl/mesh.h"
 #include "mygl/geometry.h"
@@ -240,6 +239,8 @@ void sceneUpdate(float dt, float t)
 
     // water stuff
     waterUpdate(sScene.water, t);
+    float newBoatY = calculateHeightAtPosition(t, sScene.boatTranslationMatrix[3].x, sScene.boatTranslationMatrix[3].z);
+    sScene.boatTranslationMatrix[3].y = newBoatY;
 }
 
 /* function to draw all objects in the scene */
