@@ -241,6 +241,33 @@ void sceneUpdate(float dt, float t)
     waterUpdate(sScene.water, t);
     float newBoatY = calculateHeightAtPosition(t, sScene.boatTranslationMatrix[3].x, sScene.boatTranslationMatrix[3].z);
     sScene.boatTranslationMatrix[3].y = newBoatY;
+
+    float distance = 1.0f;
+
+    Vector3D PointA;
+    Vector3D PointB;
+    Vector3D PointC;
+    PointA.x = sScene.boatTranslationMatrix[3].x + (distance * cos(0));
+    PointA.z = sScene.boatTranslationMatrix[3].z + (distance * sin(0));
+    PointA.y = calculateHeightAtPosition(t, PointA.x, PointA.z);
+    PointB.x = sScene.boatTranslationMatrix[3].x + (distance * cos(2 * M_PI / 3));
+    PointB.z = sScene.boatTranslationMatrix[3].z + (distance * sin(2 * M_PI / 3));
+    PointB.y = calculateHeightAtPosition(t, PointB.x, PointB.z);
+    PointC.x = sScene.boatTranslationMatrix[3].x + (distance * cos(4 * M_PI / 3));
+    PointC.z = sScene.boatTranslationMatrix[3].z + (distance * sin(4 * M_PI / 3));
+    PointC.y = calculateHeightAtPosition(t, PointC.x, PointC.z);
+
+    // Calculate tringle angle on z and x achse
+    float angleZ = atan2(PointB.y - PointA.y, PointB.x - PointA.x);
+    float angleX = atan2(PointC.y - PointA.y, PointC.z - PointA.z);
+    //  print angles in terminal 
+    // std::cout << "angleZ: " << angleZ << std::endl;
+    
+    //set boat rotation to the angle
+    sScene.boatTransformationMatrix = Matrix4D::rotationY(angleZ);
+    sScene.boatTransformationMatrix = sScene.boatTransformationMatrix * Matrix4D::rotationX(angleX);
+
+
 }
 
 /* function to draw all objects in the scene */
