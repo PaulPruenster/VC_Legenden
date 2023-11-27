@@ -28,6 +28,13 @@ Matrix3D::Matrix3D(Matrix4D& M)
     n[2][0] = M(0,2);   n[2][1] = M(1,2);   n[2][2] = M(2,2);
 }
 
+Matrix3D::Matrix3D(const Vector3D& a, const Vector3D& b, const Vector3D& c)
+{
+    n[0][0] = a[0];   n[0][1] = b[0];   n[0][2] = c[0];
+    n[1][0] = a[1];   n[1][1] = b[1];   n[1][2] = c[1];
+    n[2][0] = a[2];   n[2][1] = b[2];   n[2][2] = c[2];
+}
+
 Matrix3D Matrix3D::identity()
 {
     return Matrix3D( 1, 0, 0,

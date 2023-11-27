@@ -21,38 +21,28 @@ Water waterCreate(const Vector4D &color)
     return water;
 }
 
-void waterUpdate(Water &water, float time)
+void waterUpdate(Water &water, float t)
 {
     WaveParams *params = WaterSim().parameter;
     for (unsigned i = 0; i < water.vertices.size(); i++)
     {
-        // Sum the displacements from all the waves.
-        float displacement = 0.0f;
-        for (int j = 0; j < sizeof(params) / sizeof(WaveParams *); j++)
-        {
-            // Compute the displacement from this wave.
-            WaveParams p = params[j];
-            float waveDisplacement = p.amplitude * sin(p.omega * (water.vertices[i].pos.x * p.direction.x + water.vertices[i].pos.z * p.direction.y) + time * p.phi);
-
-            // Add the displacement from this wave to the total displacement.
-            displacement += waveDisplacement;
-        }
+        float displacement = calculateHeightAtPosition(t, water.vertices[i].pos.x, water.vertices[i].pos.z);
         water.vertices[i].pos.y = displacement;
     }
     meshDelete(water.mesh);
     water.mesh = meshCreate(water.vertices, grid::indices, GL_DYNAMIC_DRAW, GL_STATIC_DRAW);
 }
 
-float calculateHeightAtPosition(float time, float x, float z)
+float calculateHeightAtPosition(float t, float x, float z)
 {
     WaveParams *params = WaterSim().parameter;
 
     float displacement = 0.0f;
-    for (int j = 0; j < sizeof(params) / sizeof(WaveParams *); j++)
+    for (int j = 0; j < 3; j++)
     {
         // Compute the displacement from this wave.
         WaveParams p = params[j];
-        float waveDisplacement = p.amplitude * sin(p.omega * (x * p.direction.x + z * p.direction.y) + time * p.phi);
+        float waveDisplacement = p.amplitude * sin(p.omega * (x * p.direction.x + z * p.direction.y) + t * p.phi);
 
         // Add the displacement from this wave to the total displacement.
         displacement += waveDisplacement;

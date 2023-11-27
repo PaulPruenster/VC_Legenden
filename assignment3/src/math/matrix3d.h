@@ -14,6 +14,7 @@ struct Matrix3D
              float n10, float n11, float n12,
              float n20, float n21, float n22);
     Matrix3D(Matrix4D& m);
+    Matrix3D(const Vector3D& a, const Vector3D& b, const Vector3D& c);
 
     static Matrix3D identity();
     static Matrix3D scale(float sx, float sy, float sz);

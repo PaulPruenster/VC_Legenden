@@ -54,7 +54,7 @@ struct
     float boatTurningRadian;
     float boatVelocity;
     float boatTurningSpeed;
-    Vector3D boatFront;
+    Vector3D boatDirection;
 
     /* shader */
     ShaderProgram shaderColor;
@@ -170,7 +170,7 @@ void sceneInit(float width, float height)
         sScene.cubeTransformationMatrix[i] = Matrix4D::identity();
     }
     sScene.boatTranslationMatrix = Matrix4D::translation({0.0f, 0.0f, 0.0f});
-    sScene.boatFront = Vector3D(0.0f, 0.0f, 1.0f);
+    sScene.boatDirection = Vector3D(0.0f, 0.0f, 1.0f);
     sScene.boatTransformationMatrix = Matrix4D::rotationY(0);
     sScene.boatTurningRadian = 0.0f;
     sScene.water = waterCreate(waterPlane::color);
@@ -195,37 +195,11 @@ void sceneUpdate(float dt, float t)
     // water stuff
     waterUpdate(sScene.water, t);
 
-    float distance = 0.7f;
+    float distance = 3.5f;
     float y_offset = 0.1f;
 
-    Vector3D oldBoatPosition = sScene.boatTranslationMatrix[3];
-    float newBoatY = calculateHeightAtPosition(t, sScene.boatTranslationMatrix[3].x, sScene.boatTranslationMatrix[3].z);
-    sScene.boatTranslationMatrix[3].y = newBoatY - y_offset;
-
-    Vector3D PointA;
-    Vector3D PointB;
-    Vector3D PointC;
-    PointA.x = sScene.boatTranslationMatrix[3].x + (distance * cos(0));
-    PointA.z = sScene.boatTranslationMatrix[3].z + (distance * sin(0));
-    PointA.y = calculateHeightAtPosition(t, PointA.x, PointA.z);
-    PointB.x = sScene.boatTranslationMatrix[3].x + (distance * cos(2 * M_PI / 3));
-    PointB.z = sScene.boatTranslationMatrix[3].z + (distance * sin(2 * M_PI / 3));
-    PointB.y = calculateHeightAtPosition(t, PointB.x, PointB.z);
-    PointC.x = sScene.boatTranslationMatrix[3].x + (distance * cos(4 * M_PI / 3));
-    PointC.z = sScene.boatTranslationMatrix[3].z + (distance * sin(4 * M_PI / 3));
-    PointC.y = calculateHeightAtPosition(t, PointC.x, PointC.z);
-
-    // Calculate tringle angle on z and x achse
-    float angleZ = atan2(PointB.y - PointA.y, PointB.x - PointA.x);
-    float angleX = atan2(PointC.y - PointA.y, PointC.z - PointA.z);
-    //  print angles in terminal
-    // std::cout << "angleZ: " << angleZ << std::endl;
-
-    // set boat rotation to the angle
-    sScene.boatTransformationMatrix = Matrix4D::rotationZ(angleZ);
-    sScene.boatTransformationMatrix = sScene.boatTransformationMatrix * Matrix4D::rotationX(angleX);
-
-    // input stuff
+    
+    // Input stuff
 
     /* if 'w' or 's' pressed, boat should move forward or backwards */
     int forward = 0;
@@ -257,9 +231,37 @@ void sceneUpdate(float dt, float t)
             sScene.boatTurningRadian += left * sScene.boatTurningSpeed;
         }
     }
-    sScene.boatFront = Matrix3D::rotationY(sScene.boatTurningRadian) * Vector3D(0.0f, 0.0f, 1.0f);
-    sScene.boatTransformationMatrix = sScene.boatTransformationMatrix * Matrix4D::rotationY(sScene.boatTurningRadian);
-    sScene.boatTranslationMatrix = sScene.boatTranslationMatrix * Matrix4D::translation(forward * sScene.boatVelocity * dt * sScene.boatFront);
+
+    Vector3D oldBoatPosition = sScene.boatTranslationMatrix[3];
+    float newBoatY = calculateHeightAtPosition(t, sScene.boatTranslationMatrix[3].x, sScene.boatTranslationMatrix[3].z);
+    sScene.boatTranslationMatrix[3].y = newBoatY - y_offset;
+
+    sScene.boatDirection = Matrix3D::rotationY(sScene.boatTurningRadian) * Vector3D(0.0f, 0.0f, 1.0f);
+    sScene.boatTranslationMatrix = sScene.boatTranslationMatrix * Matrix4D::translation(forward * sScene.boatVelocity * dt * sScene.boatDirection);
+
+    Vector3D PointA;
+    Vector3D PointB;
+    Vector3D PointC;
+    PointA.x = sScene.boatTranslationMatrix[3].x + (distance * sin(sScene.boatTurningRadian));
+    PointA.z = sScene.boatTranslationMatrix[3].z + (distance * cos(sScene.boatTurningRadian));
+    PointA.y = calculateHeightAtPosition(t, PointA.x, PointA.z);
+    PointB.x = sScene.boatTranslationMatrix[3].x + (distance * sin(sScene.boatTurningRadian + M_PI - 0.343));
+    PointB.z = sScene.boatTranslationMatrix[3].z + (distance * cos(sScene.boatTurningRadian + M_PI - 0.343));
+    PointB.y = calculateHeightAtPosition(t, PointB.x, PointB.z);
+    PointC.x = sScene.boatTranslationMatrix[3].x + (distance * sin(sScene.boatTurningRadian + M_PI + 0.343));
+    PointC.z = sScene.boatTranslationMatrix[3].z + (distance * cos(sScene.boatTurningRadian + M_PI + 0.343));
+    PointC.y = calculateHeightAtPosition(t, PointC.x, PointC.z);
+
+    // Calculate orthonormal vectors for boat rotation
+    Vector3D boatFront = normalize(PointA - (0.5f * (PointB + PointC)));
+    Vector3D boatRight = normalize(PointC - PointB);
+    Vector3D boatUp = cross(boatRight, boatFront);
+    // to make sure the vectors are really orthonormal
+    boatRight = cross(boatFront, boatUp);
+ 
+    sScene.boatTransformationMatrix = Matrix4D(Matrix3D(boatRight, boatUp, boatFront));
+
+    // Camera stuff
 
     if (sScene.cameraMode == 2)
     {
