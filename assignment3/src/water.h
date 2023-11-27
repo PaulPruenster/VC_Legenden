@@ -58,6 +58,18 @@ Water waterCreate(const Vector4D &color);
 void waterUpdate(Water &water, float time);
 
 /**
+ * @brief Calculates the height of the water surface at a given position.
+ *
+ * @param time delta time.
+ * @param x x coordinate of the position.
+ * @param z z coordinate of the position.
+ *
+ * @return Height of the water surface at the given position.
+ */
+float calculateHeightAtPosition(float time, float x, float z);
+
+
+/**
  * @brief Cleanup and delete all OpenGL buffers of the water mesh. Has to be called for each water after it is not used anymore.
  *
  * @param water Water to delete.
