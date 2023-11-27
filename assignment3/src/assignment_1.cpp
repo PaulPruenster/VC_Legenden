@@ -185,14 +185,10 @@ void sceneInit(float width, float height)
     sScene.shaderColor = shaderLoad("shader/default.vert", "shader/default.frag");
 }
 
-bool boatIsMoving()
-{
-    return (sInput.buttonPressed[0] || sInput.buttonPressed[1]);
-}
 /* function to move and update objects in scene (e.g., rotate cube according to user input) */
 void sceneUpdate(float dt, float t)
 {
-    // water stuff
+    // Water stuff
     waterUpdate(sScene.water, t);
 
     float distance = 0.7f;
@@ -218,14 +214,12 @@ void sceneUpdate(float dt, float t)
     // Calculate tringle angle on z and x achse
     float angleZ = atan2(PointB.y - PointA.y, PointB.x - PointA.x);
     float angleX = atan2(PointC.y - PointA.y, PointC.z - PointA.z);
-    //  print angles in terminal
-    // std::cout << "angleZ: " << angleZ << std::endl;
 
     // set boat rotation to the angle
     sScene.boatTransformationMatrix = Matrix4D::rotationZ(angleZ);
     sScene.boatTransformationMatrix = sScene.boatTransformationMatrix * Matrix4D::rotationX(angleX);
 
-    // input stuff
+    // Input stuff
 
     /* if 'w' or 's' pressed, boat should move forward or backwards */
     int forward = 0;
@@ -250,20 +244,21 @@ void sceneUpdate(float dt, float t)
     }
 
     /* udpate cube transformation matrix to include new rotation if one of the keys was pressed */
-    if (forward != 0)
+    if (forward != 0 && left != 0)
     {
-        if (left != 0)
-        {
-            float turnAmount = left * sScene.boatTurningSpeed;
-            if (forward > 0)
-                sScene.boatTurningRadian += turnAmount;
-            else
-                sScene.boatTurningRadian -= turnAmount;
-        }
+
+        float turnAmount = left * sScene.boatTurningSpeed;
+        if (forward > 0)
+            sScene.boatTurningRadian += turnAmount;
+        else
+            sScene.boatTurningRadian -= turnAmount;
     }
+
     sScene.boatFront = Matrix3D::rotationY(sScene.boatTurningRadian) * Vector3D(0.0f, 0.0f, 1.0f);
     sScene.boatTransformationMatrix = sScene.boatTransformationMatrix * Matrix4D::rotationY(sScene.boatTurningRadian);
     sScene.boatTranslationMatrix = sScene.boatTranslationMatrix * Matrix4D::translation(-forward * sScene.boatVelocity * dt * sScene.boatFront);
+
+    // Camera stuff
 
     if (sScene.cameraMode == 2)
     {
