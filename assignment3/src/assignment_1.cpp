@@ -195,7 +195,8 @@ void sceneUpdate(float dt, float t)
     // water stuff
     waterUpdate(sScene.water, t);
 
-    float distance = 3.5f;
+    float distance1 = 3.5f;
+    float distance2 = 1.25f;
     float y_offset = 0.1f;
 
     
@@ -242,19 +243,23 @@ void sceneUpdate(float dt, float t)
     Vector3D PointA;
     Vector3D PointB;
     Vector3D PointC;
-    PointA.x = sScene.boatTranslationMatrix[3].x + (distance * sin(sScene.boatTurningRadian));
-    PointA.z = sScene.boatTranslationMatrix[3].z + (distance * cos(sScene.boatTurningRadian));
+    Vector3D PointD;
+    PointA.x = sScene.boatTranslationMatrix[3].x + (distance1 * sin(sScene.boatTurningRadian));
+    PointA.z = sScene.boatTranslationMatrix[3].z + (distance1 * cos(sScene.boatTurningRadian));
     PointA.y = calculateHeightAtPosition(t, PointA.x, PointA.z);
-    PointB.x = sScene.boatTranslationMatrix[3].x + (distance * sin(sScene.boatTurningRadian + M_PI - 0.343));
-    PointB.z = sScene.boatTranslationMatrix[3].z + (distance * cos(sScene.boatTurningRadian + M_PI - 0.343));
+    PointB.x = sScene.boatTranslationMatrix[3].x + (distance2 * sin(sScene.boatTurningRadian + M_PI / 2.0f));
+    PointB.z = sScene.boatTranslationMatrix[3].z + (distance2 * cos(sScene.boatTurningRadian + M_PI / 2.0f));
     PointB.y = calculateHeightAtPosition(t, PointB.x, PointB.z);
-    PointC.x = sScene.boatTranslationMatrix[3].x + (distance * sin(sScene.boatTurningRadian + M_PI + 0.343));
-    PointC.z = sScene.boatTranslationMatrix[3].z + (distance * cos(sScene.boatTurningRadian + M_PI + 0.343));
+    PointC.x = sScene.boatTranslationMatrix[3].x + (distance1 * sin(sScene.boatTurningRadian + M_PI));
+    PointC.z = sScene.boatTranslationMatrix[3].z + (distance1 * cos(sScene.boatTurningRadian + M_PI));
     PointC.y = calculateHeightAtPosition(t, PointC.x, PointC.z);
+    PointD.x = sScene.boatTranslationMatrix[3].x + (distance2 * sin(sScene.boatTurningRadian + 3.0f * M_PI / 2.0f));
+    PointD.z = sScene.boatTranslationMatrix[3].z + (distance2 * cos(sScene.boatTurningRadian + 3.0f * M_PI / 2.0f));
+    PointD.y = calculateHeightAtPosition(t, PointD.x, PointD.z);
 
     // Calculate orthonormal vectors for boat rotation
-    Vector3D boatFront = normalize(PointA - (0.5f * (PointB + PointC)));
-    Vector3D boatRight = normalize(PointC - PointB);
+    Vector3D boatFront = normalize(PointA - PointC);
+    Vector3D boatRight = normalize(PointD - PointB);
     Vector3D boatUp = cross(boatRight, boatFront);
     // to make sure the vectors are really orthonormal
     boatRight = cross(boatFront, boatUp);
