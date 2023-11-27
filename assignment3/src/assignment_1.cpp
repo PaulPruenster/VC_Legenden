@@ -259,7 +259,7 @@ void sceneUpdate(float dt, float t)
     }
     sScene.boatFront = Matrix3D::rotationY(sScene.boatTurningRadian) * Vector3D(0.0f, 0.0f, 1.0f);
     sScene.boatTransformationMatrix = sScene.boatTransformationMatrix * Matrix4D::rotationY(sScene.boatTurningRadian);
-    sScene.boatTranslationMatrix = sScene.boatTranslationMatrix * Matrix4D::translation(forward * sScene.boatVelocity * dt * sScene.boatFront);
+    sScene.boatTranslationMatrix = sScene.boatTranslationMatrix * Matrix4D::translation(- forward * sScene.boatVelocity * dt * sScene.boatFront);
 
     if (sScene.cameraMode == 2)
     {
