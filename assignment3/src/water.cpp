@@ -29,6 +29,7 @@ void waterUpdate(Water &water, float t)
         float displacement = calculateHeightAtPosition(t, water.vertices[i].pos.x, water.vertices[i].pos.z);
         water.vertices[i].pos.y = displacement;
     }
+    // do with buffer subdata
     meshDelete(water.mesh);
     water.mesh = meshCreate(water.vertices, grid::indices, GL_DYNAMIC_DRAW, GL_STATIC_DRAW);
 }
