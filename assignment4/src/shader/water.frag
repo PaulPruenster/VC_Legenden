@@ -9,7 +9,11 @@ out vec4 FragColor;
 
 uniform Material uMaterial;
 
+in float displacement;
+
 void main(void)
 {
-    FragColor = vec4(uMaterial.diffuse, 1.0);
+    vec3 color = mix(uMaterial.diffuse, vec3(1.0), displacement);
+
+    FragColor = vec4(color, 1.0);
 }

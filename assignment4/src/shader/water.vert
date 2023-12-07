@@ -14,14 +14,16 @@ out vec3 tNormal;
 out vec3 tFragPos;
 out vec2 tUV;
 
+out float displacement;
+
 void main(void)
 {
-    float amplitude = 1.0; // Adjust amplitude for desired wave height
-    float frequency = 5.0; // Adjust frequency for wave speed
+    float wave1 = 0.6 * sin(0.25 * (aPosition.x * 1.0 + aPosition.z * 1.0) + time * 0.5);
+    float wave2 = 0.7 * sin(0.1 * (aPosition.x * 1.0 + aPosition.z * -1.0) + time * 0.25);
+    float wave3 = 0.1 * sin(0.9 * (aPosition.x * -1.0 + aPosition.z * 1.0) + time * 0.9);
 
-    float waveDisplacement = 0.6 * sin(0.25 * (aPosition.x * 1.0 + aPosition.z * 1.0) + time * 0.5);
-
-    vec3 transformedPosition = aPosition + waveDisplacement;
+    vec3 transformedPosition = aPosition + wave1 + wave2 + wave3;
+    displacement = wave1 + wave2 + wave3;
 
     gl_Position = uProj * uView * uModel * vec4(transformedPosition, 1.0);
     tFragPos = vec3(uModel * vec4(aPosition, 1.0));
