@@ -13,7 +13,7 @@ in float displacement;
 
 void main(void)
 {
-    vec3 color = mix(uMaterial.diffuse, vec3(1.0), displacement);
+    vec3 color = mix(uMaterial.diffuse, vec3(1.0), 0.5*displacement);
 
     FragColor = vec4(color, 1.0);
 }
