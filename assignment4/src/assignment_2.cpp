@@ -147,6 +147,10 @@ void render()
     shaderUniform(sScene.shaderBoat, "uView", view);
     shaderUniform(sScene.shaderBoat, "uModel", sScene.boat.transformation);
 
+    shaderUniform(sScene.shaderBoat, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
+    shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f));
+    shaderUniform(sScene.shaderBoat, "cameraPosition", sScene.camera.position);
+
     for (unsigned int i = 0; i < sScene.boat.partModel.size(); i++)
     {
         auto &model = sScene.boat.partModel[i];
@@ -158,6 +162,8 @@ void render()
         {
             /* set material properties */
             shaderUniform(sScene.shaderBoat, "uMaterial.diffuse", material.diffuse);
+            shaderUniform(sScene.shaderBoat, "uMaterial.shininess", material.shininess);
+            shaderUniform(sScene.shaderBoat, "uMaterial.ambient", material.ambient);
 
             glDrawElements(GL_TRIANGLES, material.indexCount, GL_UNSIGNED_INT, (const void *)(material.indexOffset * sizeof(unsigned int)));
         }
