@@ -54,14 +54,14 @@ void main(void)
         ddx += p.amplitude * cos(dot(normalize(p.direction), aPosition.xz) * p.omega + time * p.phi) * p.direction.x * p.omega;
     }
 
-    float ddz = 0.0;
+    float ddy = 0.0;
     for (int i = 0; i < 3; i++) {
         WaveParams p = uWaterSim.parameter[i];
-        ddz += p.amplitude * cos(dot(normalize(p.direction), aPosition.xz) * p.omega + time * p.phi) * p.direction.y * p.omega;
+        ddy += p.amplitude * cos(dot(normalize(p.direction), aPosition.xz) * p.omega + time * p.phi) * p.direction.y * p.omega;
     }
 
     vec3 r1 = vec3(1, 0, ddx);
-    vec3 r2 = vec3(0, 1, ddz);
+    vec3 r2 = vec3(0, 1, ddy);
     varyingNormal = normalize(cross(r1, r2));
 
     tNormal = mat3(transpose(inverse(uModel))) * varyingNormal;
