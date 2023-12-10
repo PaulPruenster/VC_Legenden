@@ -19,15 +19,16 @@ uniform Material uMaterial;
 uniform DirectionalLight uDirectionalLight;
 uniform vec3 cameraPosition;
 
-in float displacement;
-in vec3 varyingNormal;
 in vec3 tFragPos;
 in vec3 tNormal;
 
 void main(void)
 {
+    // Normalize the cross product of the X and Y derivatives
+    vec3 dFdx_position = dFdx(tFragPos);
+    vec3 dFdy_position = dFdy(tFragPos);
+    vec3 normal = normalize(cross(dFdx_position, dFdy_position));
     vec3 ambient = 0.3 * uMaterial.ambient;
-    vec3 normal = normalize(tNormal);
 
     vec3 lightDir = normalize(-uDirectionalLight.direction);
 

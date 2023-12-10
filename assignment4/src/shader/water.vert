@@ -28,8 +28,6 @@ out vec3 tNormal;
 out vec3 tFragPos;
 out vec2 tUV;
 
-out float displacement;
-out vec3 varyingNormal;
 
 void main(void)
 {
@@ -43,27 +41,8 @@ void main(void)
 
     vec3 transformedPosition = aPosition;
     transformedPosition.y += height;
-
-    displacement = height;    
     gl_Position = uProj * uView * uModel * vec4(transformedPosition, 1.0);
     tFragPos = vec3(uModel * vec4(transformedPosition, 1.0));
 
-    float ddx = 0.0;
-    for (int i = 0; i < 3; i++) {
-        WaveParams p = uWaterSim.parameter[i];
-        ddx += p.amplitude * cos(dot(normalize(p.direction), aPosition.xz) * p.omega + time * p.phi) * p.direction.x * p.omega;
-    }
-
-    float ddy = 0.0;
-    for (int i = 0; i < 3; i++) {
-        WaveParams p = uWaterSim.parameter[i];
-        ddy += p.amplitude * cos(dot(normalize(p.direction), aPosition.xz) * p.omega + time * p.phi) * p.direction.y * p.omega;
-    }
-
-    vec3 r1 = vec3(1, 0, ddx);
-    vec3 r2 = vec3(0, 1, ddy);
-    varyingNormal = normalize(cross(r1, r2));
-
-    tNormal = mat3(transpose(inverse(uModel))) * varyingNormal;
     tUV = aUV;
 }
