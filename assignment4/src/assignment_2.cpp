@@ -188,7 +188,18 @@ void render()
         shaderUniform(sScene.shaderWater, "uProj", proj);
         shaderUniform(sScene.shaderWater, "uView", view);
         shaderUniform(sScene.shaderWater, "uModel", Matrix4D::identity());
-        shaderUniform(sScene.shaderWater, "time", sScene.waterSim.accumTime);
+
+        shaderUniform(sScene.shaderWater, "uWaterSim.accumTime", sScene.waterSim.accumTime);
+        for (int i = 0; i < 3; i++)
+        {
+            WaveParams current = sScene.waterSim.parameter[i];
+            std::string currentStr = "uWaterSim.parameter[" + std::to_string(i) + "]";
+
+            shaderUniform(sScene.shaderWater, currentStr + ".amplitude", current.amplitude);
+            shaderUniform(sScene.shaderWater, currentStr + ".phi", current.phi);
+            shaderUniform(sScene.shaderWater, currentStr + ".omega", current.omega);
+            shaderUniform(sScene.shaderWater, currentStr + ".direction", current.direction);
+        }
 
         /* set material properties */
         shaderUniform(sScene.shaderWater, "uMaterial.diffuse", sScene.water.material.front().diffuse);
