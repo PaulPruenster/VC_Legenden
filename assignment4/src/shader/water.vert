@@ -64,6 +64,6 @@ void main(void)
     vec3 r2 = vec3(0, 1, ddz);
     varyingNormal = normalize(cross(r1, r2));
 
-    tNormal = varyingNormal; // mat3(transpose(inverse(uModel))) * aNormal;
+    tNormal = mat3(transpose(inverse(uModel))) * varyingNormal;
     tUV = aUV;
 }

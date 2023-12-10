@@ -189,6 +189,14 @@ void render()
         shaderUniform(sScene.shaderWater, "uView", view);
         shaderUniform(sScene.shaderWater, "uModel", Matrix4D::identity());
 
+        shaderUniform(sScene.shaderWater, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
+        shaderUniform(sScene.shaderWater, "cameraPosition", sScene.camera.position);
+
+        if (sScene.isDay)
+            shaderUniform(sScene.shaderWater, "uDirectionalLight.color", Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f));
+        else
+            shaderUniform(sScene.shaderWater, "uDirectionalLight.color", Vector3D(20 / 255.0f, 10 / 255.0f, 10 / 255.0f));
+
         shaderUniform(sScene.shaderWater, "uWaterSim.accumTime", sScene.waterSim.accumTime);
         for (int i = 0; i < 3; i++)
         {
@@ -203,6 +211,8 @@ void render()
 
         /* set material properties */
         shaderUniform(sScene.shaderWater, "uMaterial.diffuse", sScene.water.material.front().diffuse);
+        shaderUniform(sScene.shaderWater, "uMaterial.shininess", sScene.water.material.front().shininess);
+        shaderUniform(sScene.shaderWater, "uMaterial.ambient", sScene.water.material.front().ambient);
 
         glBindVertexArray(sScene.water.mesh.vao);
         glDrawElements(GL_TRIANGLES, sScene.water.material.front().indexCount, GL_UNSIGNED_INT, (const void *)(sScene.water.material.front().indexOffset * sizeof(unsigned int)));
