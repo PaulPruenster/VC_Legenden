@@ -12,6 +12,7 @@ struct
 {
     Camera camera;
     bool cameraFollowBoat;
+    bool isDay = true;
     float zoomSpeedMultiplier;
 
     Boat boat;
@@ -65,6 +66,12 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_D)
     {
         sInput.keyPressed[Boat::eControl::RUDDER_RIGHT] = (action == GLFW_PRESS || action == GLFW_REPEAT);
+    }
+
+    /* day and night */
+    if (key == GLFW_KEY_N && action == GLFW_PRESS)
+    {
+        sScene.isDay = !sScene.isDay;
     }
 
     /* close window on escape */
@@ -137,6 +144,13 @@ void sceneUpdate(float dt)
         cameraFollow(sScene.camera, sScene.boat.position);
 }
 
+Vector3D getLightColor()
+{
+    if (sScene.isDay)
+        return Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f);
+    return Vector3D(20 / 255.0f, 10 / 255.0f, 10 / 255.0f);
+}
+
 void render()
 {
     /* setup camera and model matrices */
@@ -146,6 +160,10 @@ void render()
     shaderUniform(sScene.shaderBoat, "uProj", proj);
     shaderUniform(sScene.shaderBoat, "uView", view);
     shaderUniform(sScene.shaderBoat, "uModel", sScene.boat.transformation);
+
+    shaderUniform(sScene.shaderBoat, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
+    shaderUniform(sScene.shaderBoat, "cameraPosition", sScene.camera.position);
+    shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", getLightColor());
 
     for (unsigned int i = 0; i < sScene.boat.partModel.size(); i++)
     {
@@ -158,6 +176,8 @@ void render()
         {
             /* set material properties */
             shaderUniform(sScene.shaderBoat, "uMaterial.diffuse", material.diffuse);
+            shaderUniform(sScene.shaderBoat, "uMaterial.shininess", material.shininess);
+            shaderUniform(sScene.shaderBoat, "uMaterial.ambient", material.ambient);
 
             glDrawElements(GL_TRIANGLES, material.indexCount, GL_UNSIGNED_INT, (const void *)(material.indexOffset * sizeof(unsigned int)));
         }
@@ -172,15 +192,28 @@ void render()
         shaderUniform(sScene.shaderWater, "uView", view);
         shaderUniform(sScene.shaderWater, "uModel", Matrix4D::identity());
 
+        shaderUniform(sScene.shaderWater, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
+        shaderUniform(sScene.shaderWater, "cameraPosition", sScene.camera.position);
+        shaderUniform(sScene.shaderWater, "uDirectionalLight.color", getLightColor());
+
+        shaderUniform(sScene.shaderWater, "uWaterSim.accumTime", sScene.waterSim.accumTime);
+        for (int i = 0; i < 3; i++)
+        {
+            WaveParams current = sScene.waterSim.parameter[i];
+            std::string currentStr = "uWaterSim.parameter[" + std::to_string(i) + "]";
+
+            shaderUniform(sScene.shaderWater, currentStr + ".amplitude", current.amplitude);
+            shaderUniform(sScene.shaderWater, currentStr + ".phi", current.phi);
+            shaderUniform(sScene.shaderWater, currentStr + ".omega", current.omega);
+            shaderUniform(sScene.shaderWater, currentStr + ".direction", current.direction);
+        }
+
         /* set material properties */
         shaderUniform(sScene.shaderWater, "uMaterial.diffuse", sScene.water.material.front().diffuse);
+        shaderUniform(sScene.shaderWater, "uMaterial.shininess", sScene.water.material.front().shininess);
+        shaderUniform(sScene.shaderWater, "uMaterial.ambient", sScene.water.material.front().ambient);
 
         glBindVertexArray(sScene.water.mesh.vao);
-
-        float currentTime = glfwGetTime();
-        auto timeUniformLocation = glGetUniformLocation(sScene.shaderWater.id, "time");
-        glUniform1f(timeUniformLocation, currentTime);
-
         glDrawElements(GL_TRIANGLES, sScene.water.material.front().indexCount, GL_UNSIGNED_INT, (const void *)(sScene.water.material.front().indexOffset * sizeof(unsigned int)));
     }
 

@@ -28,7 +28,7 @@ void waterUpdate(Water &water, float time)
     {
         // Sum the displacements from all the waves.
         float displacement = 0.0f;
-        for (int j = 0; j < sizeof(params) / sizeof(WaveParams *); j++)
+        for (int j = 0; j < 3; j++)
         {
             // Compute the displacement from this wave.
             WaveParams p = params[j];
