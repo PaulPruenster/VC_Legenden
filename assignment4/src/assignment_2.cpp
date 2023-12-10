@@ -144,6 +144,13 @@ void sceneUpdate(float dt)
         cameraFollow(sScene.camera, sScene.boat.position);
 }
 
+Vector3D getLightColor()
+{
+    if (sScene.isDay)
+        return Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f);
+    return Vector3D(20 / 255.0f, 10 / 255.0f, 10 / 255.0f);
+}
+
 void render()
 {
     /* setup camera and model matrices */
@@ -156,11 +163,7 @@ void render()
 
     shaderUniform(sScene.shaderBoat, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
     shaderUniform(sScene.shaderBoat, "cameraPosition", sScene.camera.position);
-
-    if (sScene.isDay)
-        shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f));
-    else
-        shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", Vector3D(20 / 255.0f, 10 / 255.0f, 10 / 255.0f));
+    shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", getLightColor());
 
     for (unsigned int i = 0; i < sScene.boat.partModel.size(); i++)
     {
@@ -191,11 +194,7 @@ void render()
 
         shaderUniform(sScene.shaderWater, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
         shaderUniform(sScene.shaderWater, "cameraPosition", sScene.camera.position);
-
-        if (sScene.isDay)
-            shaderUniform(sScene.shaderWater, "uDirectionalLight.color", Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f));
-        else
-            shaderUniform(sScene.shaderWater, "uDirectionalLight.color", Vector3D(20 / 255.0f, 10 / 255.0f, 10 / 255.0f));
+        shaderUniform(sScene.shaderWater, "uDirectionalLight.color", getLightColor());
 
         shaderUniform(sScene.shaderWater, "uWaterSim.accumTime", sScene.waterSim.accumTime);
         for (int i = 0; i < 3; i++)
