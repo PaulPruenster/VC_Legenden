@@ -12,6 +12,7 @@ struct
 {
     Camera camera;
     bool cameraFollowBoat;
+    bool isDay = true;
     float zoomSpeedMultiplier;
 
     Boat boat;
@@ -65,6 +66,12 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_D)
     {
         sInput.keyPressed[Boat::eControl::RUDDER_RIGHT] = (action == GLFW_PRESS || action == GLFW_REPEAT);
+    }
+
+    /* day and night */
+    if (key == GLFW_KEY_N && action == GLFW_PRESS)
+    {
+        sScene.isDay = !sScene.isDay;
     }
 
     /* close window on escape */
@@ -148,8 +155,12 @@ void render()
     shaderUniform(sScene.shaderBoat, "uModel", sScene.boat.transformation);
 
     shaderUniform(sScene.shaderBoat, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
-    shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f));
     shaderUniform(sScene.shaderBoat, "cameraPosition", sScene.camera.position);
+
+    if (sScene.isDay)
+        shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f));
+    else
+        shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", Vector3D(20 / 255.0f, 10 / 255.0f, 10 / 255.0f));
 
     for (unsigned int i = 0; i < sScene.boat.partModel.size(); i++)
     {
@@ -177,16 +188,12 @@ void render()
         shaderUniform(sScene.shaderWater, "uProj", proj);
         shaderUniform(sScene.shaderWater, "uView", view);
         shaderUniform(sScene.shaderWater, "uModel", Matrix4D::identity());
+        shaderUniform(sScene.shaderWater, "time", sScene.waterSim.accumTime);
 
         /* set material properties */
         shaderUniform(sScene.shaderWater, "uMaterial.diffuse", sScene.water.material.front().diffuse);
 
         glBindVertexArray(sScene.water.mesh.vao);
-
-        float currentTime = glfwGetTime();
-        auto timeUniformLocation = glGetUniformLocation(sScene.shaderWater.id, "time");
-        glUniform1f(timeUniformLocation, currentTime);
-
         glDrawElements(GL_TRIANGLES, sScene.water.material.front().indexCount, GL_UNSIGNED_INT, (const void *)(sScene.water.material.front().indexOffset * sizeof(unsigned int)));
     }
 
