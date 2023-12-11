@@ -38,46 +38,48 @@ void main(void)
     float ambientCoefficient = 1.0;
     float diffuseCoefficient = 1.0;
     float specularCoefficient = 1.0;
+    
     vec3 globalAmbient = vec3(0.1, 0.1, 0.1);
     float numberOfLights = 5.0;
     vec3 normal = tNormal;
-    vec3 ambient = ambientCoefficient * uMaterial.ambient * globalAmbient;
 
     vec3 lightDir = normalize(-uDirectionalLight.direction);
-
-    // Calculate the half vector
     vec3 viewDir = normalize(cameraPosition - tFragPos);
     vec3 halfVec = normalize(lightDir + viewDir);
+
+    // Calculate ambient reflection
+    vec3 ambient = ambientCoefficient * uMaterial.ambient * globalAmbient;
 
     // Calculate diffuse reflection
     float diff = dot(normal, lightDir);
     vec3 diffuse = diffuseCoefficient * uMaterial.diffuse * uDirectionalLight.color * diff;
 
-    // Calculate specular reflection (Blinn-Phong model)
+    // Calculate specular reflection
     float spec = pow(max(dot(normal, halfVec), 0.0), uMaterial.shininess);
     vec3 specular = specularCoefficient * uMaterial.specular * uDirectionalLight.color * spec;
 
-
-    vec3 light_spec = vec3(0.0, 0.0, 0.0);
-
     for (int i = 0; i < numberOfLights; i++)
     {
-        vec3 position_diff = uPointLights[i].position - tFragPos;
-        float position_norm = length(position_diff);
-        float intensity = 1.0 / (position_norm * position_norm);
-        // Calculate the half vector
-        vec3 lightDir = normalize(uPointLights[i].position - tFragPos);
-        vec3 halfVec = normalize(lightDir + viewDir);
+        vec3 lightDirection = uPointLights[i].position - tFragPos;
+        float lightDistance = length(lightDirection);
+        float intensity = 7.0 / (lightDistance * lightDistance);
 
-        float spec = pow(max(dot(normal, halfVec), 0.0), uMaterial.shininess);
-        vec3 specular_point = uPointLights[i].color * spec;
-        light_spec += (specular_point * intensity);
+        // Calculate the half vector
+        lightDir = normalize(lightDirection);
+        halfVec = normalize(lightDirection + viewDir);
+
+        // Calculate diffuse reflection
+        diff = dot(normal, lightDirection);
+        diffuse += diffuseCoefficient * uMaterial.diffuse * uPointLights[i].color * diff * intensity;
+
+        // Calculate specular reflection
+        spec = pow(max(dot(normal, halfVec), 0.0), uMaterial.shininess);
+        specular += specularCoefficient * uMaterial.specular * uDirectionalLight.color * spec;
     }
-    specular += light_spec;
-    specular /= numberOfLights;
 
     // Combine diffuse and specular components
     vec3 result = ambient + diffuse + specular;
-    if (!isDay) result *= 0.4;
+    result = clamp(result, 0.0, 1.0);
+    if (!isDay) result *= 0.9;
     FragColor = vec4(result, 1.0);
 }
