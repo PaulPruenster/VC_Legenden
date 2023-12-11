@@ -34,11 +34,12 @@ in vec3 tFragPos;
 
 void main(void)
 {
-        float numberOfLights = 5.0;
+        float numberOfLights = 2.0;
         // Normalize the cross product of the X and Y derivatives
         vec3 dFdx_position = dFdx(tFragPos);
         vec3 dFdy_position = dFdy(tFragPos);
         vec3 normal = normalize(cross(dFdx_position, dFdy_position));
+        normal = tNormal;
         vec3 ambient = 0.3 * uMaterial.ambient;
 
         vec3 lightDir = normalize(-uDirectionalLight.direction);
@@ -64,18 +65,14 @@ void main(void)
             vec3 postion_diff = uPointLights[i].position - tFragPos;
             float position_norm = length(postion_diff);
             float intensity = 1.0 / position_norm * position_norm;
-
-            vec3 pointLightColor = uPointLights[i].color;
-
+            intensity = 1.0;
             // Calculate the half vector
             vec3 lightDir = normalize(uPointLights[i].position - tFragPos);
             vec3 halfVec = normalize(lightDir + viewDir);
 
             float spec = pow(max(dot(normal, halfVec), 0.0), uMaterial.shininess);
-            vec3 specular_point = pointLightColor * spec;
+            vec3 specular_point = uPointLights[i].color * spec;
             light_spec += (specular_point * intensity);
-
-
         }
         specular += light_spec;
         specular /= numberOfLights;

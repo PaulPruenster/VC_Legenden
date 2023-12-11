@@ -173,11 +173,8 @@ void render()
     // print a var to the terminal
     std::cout << (sScene.boat.position + Vector3D(10.0f, 10.0f, 10.0f)) << std::endl;
     // Front light source left
-    shaderUniform(sScene.shaderBoat, "uPointLights[0].position", sScene.boat.position + Vector3D(0.0f, 5.0f, 0.0f));
-    shaderUniform(sScene.shaderBoat, "uPointLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
-
-
-
+    shaderUniform(sScene.shaderBoat, "uPointLights[0].position", sScene.boat.position + Vector3D(0.0f, 2.0f, 0.0f));
+    shaderUniform(sScene.shaderBoat, "uPointLights[0].color", Vector3D(1.0f, 0.0f, 0.0f));
 
 
     for (unsigned int i = 0; i < sScene.boat.partModel.size(); i++)
@@ -210,6 +207,12 @@ void render()
         shaderUniform(sScene.shaderWater, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
         shaderUniform(sScene.shaderWater, "cameraPosition", sScene.camera.position);
         shaderUniform(sScene.shaderWater, "uDirectionalLight.color", getLightColor());
+
+        shaderUniform(sScene.shaderWater, "uPointLights[0].position", sScene.boat.position + Vector3D(1.0f, 2.0f, -1.f));
+        shaderUniform(sScene.shaderWater, "uPointLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
+
+        shaderUniform(sScene.shaderWater, "uPointLights[1].position", sScene.boat.position + Vector3D(-1.0f, 2.0f, -1.f));
+        shaderUniform(sScene.shaderWater, "uPointLights[1].color", Vector3D(1.0f, 0.0f, 0.0f));
 
         shaderUniform(sScene.shaderWater, "isDay", sScene.isDay);
 

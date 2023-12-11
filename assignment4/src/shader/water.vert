@@ -43,6 +43,6 @@ void main(void)
     transformedPosition.y += height;
     gl_Position = uProj * uView * uModel * vec4(transformedPosition, 1.0);
     tFragPos = vec3(uModel * vec4(transformedPosition, 1.0));
-
+    tNormal = mat3(transpose(inverse(uModel))) * aNormal;
     tUV = aUV;
 }
