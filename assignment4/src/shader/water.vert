@@ -34,15 +34,23 @@ void main(void)
     float time = uWaterSim.accumTime;
 
     float height = 0.0;
+    float dfdx = 0.0;
+    float dfdz = 0.0;
     for (int i = 0; i < 3; i++) {
         WaveParams p = uWaterSim.parameter[i];
         height += p.amplitude * sin(dot(normalize(p.direction), aPosition.xz) * p.omega + time * p.phi);
+        dfdx += p.amplitude * cos(dot(normalize(p.direction), aPosition.xz) * p.omega + time * p.phi) * p.direction.x * p.omega;
+        dfdz += p.amplitude * cos(dot(normalize(p.direction), aPosition.xz) * p.omega + time * p.phi) * p.direction.y * p.omega;
     }
 
     vec3 transformedPosition = aPosition;
     transformedPosition.y += height;
     gl_Position = uProj * uView * uModel * vec4(transformedPosition, 1.0);
     tFragPos = vec3(uModel * vec4(transformedPosition, 1.0));
+
+    vec3 x_normal = normalize(vec3(1.0, dfdx, 0.0));
+    vec3 z_normal = normalize(vec3(0.0, dfdz, 1.0));
+    tNormal = normalize(cross(z_normal, x_normal));
 
     tUV = aUV;
 }
