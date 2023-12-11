@@ -16,9 +16,16 @@ struct DirectionalLight
 
 struct DecayingPointLight
 {
+    vec3 color;
+    vec3 position;
+};
+
+struct SpotLight
+{
     vec3 direction;
     vec3 color;
     vec3 position;
+    float angle;
 };
 
 out vec4 FragColor;
@@ -28,7 +35,7 @@ uniform DirectionalLight uDirectionalLight;
 uniform vec3 cameraPosition;
 uniform bool isDay;
 
-uniform DecayingPointLight uPointLights[4];
+uniform SpotLight uSpotLights[4];
 
 in vec3 tNormal;
 in vec3 tFragPos;
@@ -37,10 +44,9 @@ void main(void)
 {
     float ambientCoefficient = 1.0;
     float diffuseCoefficient = 1.0;
-    float specularCoefficient = 1.0;
+    float specularCoefficient = 0.5;
     
     vec3 globalAmbient = vec3(0.1, 0.1, 0.1);
-    float numberOfLights = 5.0;
     vec3 normal = tNormal;
 
     vec3 lightDir = normalize(-uDirectionalLight.direction);
@@ -58,19 +64,22 @@ void main(void)
     float spec = pow(max(dot(normal, halfVec), 0.0), uMaterial.shininess);
     vec3 specular = specularCoefficient * uMaterial.specular * uDirectionalLight.color * spec;
 
-    for (int i = 0; i < numberOfLights; i++)
+    for (int i = 0; i < 4; i++)
     {
-        vec3 lightDirection = uPointLights[i].position - tFragPos;
+        vec3 lightDirection = uSpotLights[i].position - tFragPos;
         float lightDistance = length(lightDirection);
-        float intensity = 7.0 / (lightDistance * lightDistance);
+        float intensity = 5.0 / (lightDistance * lightDistance);
+        lightDirection = normalize(lightDirection);
+        if (acos(dot(uSpotLights[i].direction, lightDirection)) > uSpotLights[i].angle) {
+            continue;
+        }
 
         // Calculate the half vector
-        lightDir = normalize(lightDirection);
         halfVec = normalize(lightDirection + viewDir);
 
         // Calculate diffuse reflection
         diff = dot(normal, lightDirection);
-        diffuse += diffuseCoefficient * uMaterial.diffuse * uPointLights[i].color * diff * intensity;
+        diffuse += diffuseCoefficient * uMaterial.diffuse * uSpotLights[i].color * diff * intensity;
 
         // Calculate specular reflection
         spec = pow(max(dot(normal, halfVec), 0.0), uMaterial.shininess);
