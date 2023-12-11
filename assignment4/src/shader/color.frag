@@ -83,7 +83,7 @@ void main(void)
 
         // Calculate specular reflection
         spec = pow(max(dot(normal, halfVec), 0.0), uMaterial.shininess);
-        specular += specularCoefficient * uMaterial.specular * uDirectionalLight.color * spec;
+        specular += specularCoefficient * uMaterial.specular * uSpotLights[i].color * spec;
     }
 
     // Combine diffuse and specular components
