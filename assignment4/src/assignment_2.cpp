@@ -184,22 +184,22 @@ void render()
     
     shaderUniform(sScene.shaderBoat, "uSpotLights[0].position", lightPosition_green);
     shaderUniform(sScene.shaderBoat, "uSpotLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
-    shaderUniform(sScene.shaderBoat, "uSpotLights[0].direction", normalize(Vector3D(-1.0f, 0.0f, 0.0f)));
-    shaderUniform(sScene.shaderBoat, "uSpotLights[0].angle", 3.14f);
+    shaderUniform(sScene.shaderBoat, "uSpotLights[0].direction", normalize(Matrix3D::rotationY(sScene.boat.angles.y) * Vector3D(1.0f, 0.0f, 0.0f)));
+    shaderUniform(sScene.shaderBoat, "uSpotLights[0].angle", 1.57f);
 
     shaderUniform(sScene.shaderBoat, "uSpotLights[1].position", lightPosition_red);
     shaderUniform(sScene.shaderBoat, "uSpotLights[1].color", Vector3D(1.0f, 0.0f, 0.0f));
-    shaderUniform(sScene.shaderBoat, "uSpotLights[1].direction", normalize(Vector3D(1.0f, 0.0f, 0.0f)));
-    shaderUniform(sScene.shaderBoat, "uSpotLights[1].angle", 3.14f);
+    shaderUniform(sScene.shaderBoat, "uSpotLights[1].direction", normalize(Matrix3D::rotationY(sScene.boat.angles.y) * Vector3D(-1.0f, 0.0f, 0.0f)));
+    shaderUniform(sScene.shaderBoat, "uSpotLights[1].angle", 1.57f);
 
     shaderUniform(sScene.shaderBoat, "uSpotLights[2].position", lightPosition_white);
     shaderUniform(sScene.shaderBoat, "uSpotLights[2].color", Vector3D(1.0f, 1.0f, 1.0f));
-    shaderUniform(sScene.shaderBoat, "uSpotLights[2].direction", normalize(Vector3D(0.0f, -0.2f, -1.0f)));
+    shaderUniform(sScene.shaderBoat, "uSpotLights[2].direction", normalize(Matrix3D::rotationY(sScene.boat.angles.y) * Vector3D(0.0f, -0.2f, -1.0f)));
     shaderUniform(sScene.shaderBoat, "uSpotLights[2].angle", 1.309f);
 
     shaderUniform(sScene.shaderBoat, "uSpotLights[3].position", lightPosition_white2);
     shaderUniform(sScene.shaderBoat, "uSpotLights[3].color", Vector3D(1.0f, 1.0f, 1.0f));
-    shaderUniform(sScene.shaderBoat, "uSpotLights[3].direction", normalize(Vector3D(0.0f, -0.0f, -1.0f)));
+    shaderUniform(sScene.shaderBoat, "uSpotLights[3].direction", normalize(Matrix3D::rotationY(sScene.boat.angles.y) * (0.0f, -0.0f, -1.0f)));
     shaderUniform(sScene.shaderBoat, "uSpotLights[3].angle", 1.309f);
 
 
@@ -237,22 +237,22 @@ void render()
 
     shaderUniform(sScene.shaderWater, "uSpotLights[0].position", lightPosition_green);
     shaderUniform(sScene.shaderWater, "uSpotLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
-    shaderUniform(sScene.shaderWater, "uSpotLights[0].direction", normalize(Vector3D(-1.0f, 0.0f, 0.0f)));
-    shaderUniform(sScene.shaderWater, "uSpotLights[0].angle", 3.14f);
+    shaderUniform(sScene.shaderWater, "uSpotLights[0].direction", normalize(Matrix3D::rotationY(sScene.boat.angles.y) * Vector3D(1.0f, 0.0f, 0.0f)));
+    shaderUniform(sScene.shaderWater, "uSpotLights[0].angle", 1.57f);
 
     shaderUniform(sScene.shaderWater, "uSpotLights[1].position", lightPosition_red);
     shaderUniform(sScene.shaderWater, "uSpotLights[1].color", Vector3D(1.0f, 0.0f, 0.0f));
-    shaderUniform(sScene.shaderWater, "uSpotLights[1].direction", normalize(Vector3D(1.0f, 0.0f, 0.0f)));
-    shaderUniform(sScene.shaderWater, "uSpotLights[1].angle", 3.14f);
+    shaderUniform(sScene.shaderWater, "uSpotLights[1].direction", normalize(Matrix3D::rotationY(sScene.boat.angles.y) * Vector3D(-1.0f, 0.0f, 0.0f)));
+    shaderUniform(sScene.shaderWater, "uSpotLights[1].angle", 1.57f);
 
     shaderUniform(sScene.shaderWater, "uSpotLights[2].position", lightPosition_white);
     shaderUniform(sScene.shaderWater, "uSpotLights[2].color", Vector3D(1.0f, 1.0f, 1.0f));
-    shaderUniform(sScene.shaderWater, "uSpotLights[2].direction", normalize(Vector3D(0.0f, 0.3f, -1.0f)));
+    shaderUniform(sScene.shaderWater, "uSpotLights[2].direction", normalize(Matrix3D::rotationY(sScene.boat.angles.y) * Vector3D(0.0f, 0.3f, -1.0f)));
     shaderUniform(sScene.shaderWater, "uSpotLights[2].angle", 0.655f);
 
     shaderUniform(sScene.shaderWater, "uSpotLights[3].position", lightPosition_white2);
     shaderUniform(sScene.shaderWater, "uSpotLights[3].color", Vector3D(1.0f, 1.0f, 1.0f));
-    shaderUniform(sScene.shaderWater, "uSpotLights[3].direction", normalize(Vector3D(0.0f, 0.3f, -1.0f)));
+    shaderUniform(sScene.shaderWater, "uSpotLights[3].direction", normalize(Matrix3D::rotationY(sScene.boat.angles.y) * Vector3D(0.0f, 0.3f, -1.0f)));
     shaderUniform(sScene.shaderWater, "uSpotLights[3].angle", 0.655f);
 
         shaderUniform(sScene.shaderWater, "isDay", sScene.isDay);
