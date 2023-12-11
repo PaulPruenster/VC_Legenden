@@ -146,10 +146,10 @@ void sceneUpdate(float dt)
 
 Vector3D getLightColor()
 {
-    if (sScene.isDay)
-        return Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f);
-    return Vector3D(0 / 255.0f, 0 / 255.0f, 0 / 255.0f);
-    return Vector3D(69 / 255.0f, 69 / 255.0f, 69 / 255.0f);
+    if (sScene.isDay) {
+        return Vector3D(255 / 255.0f,  255 / 255.0f, 112 / 255.0f);
+    }
+    return Vector3D(31 / 255.0f, 31 / 255.0f, 31 / 255.0f);
 }
 
 void render()
@@ -164,7 +164,7 @@ void render()
 
     shaderUniform(sScene.shaderBoat, "isDay", sScene.isDay);
 
-    shaderUniform(sScene.shaderBoat, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
+    shaderUniform(sScene.shaderBoat, "uDirectionalLight.direction", normalize(Vector3D(0.0f, -0.2f, 1.0f)));
     shaderUniform(sScene.shaderBoat, "cameraPosition", sScene.camera.position);
     shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", getLightColor());
 
@@ -198,6 +198,7 @@ void render()
             shaderUniform(sScene.shaderBoat, "uMaterial.diffuse", material.diffuse);
             shaderUniform(sScene.shaderBoat, "uMaterial.shininess", material.shininess);
             shaderUniform(sScene.shaderBoat, "uMaterial.ambient", material.ambient);
+            shaderUniform(sScene.shaderBoat, "uMaterial.specular", material.specular);
 
             glDrawElements(GL_TRIANGLES, material.indexCount, GL_UNSIGNED_INT, (const void *)(material.indexOffset * sizeof(unsigned int)));
         }
@@ -246,6 +247,7 @@ void render()
         shaderUniform(sScene.shaderWater, "uMaterial.diffuse", sScene.water.material.front().diffuse);
         shaderUniform(sScene.shaderWater, "uMaterial.shininess", sScene.water.material.front().shininess);
         shaderUniform(sScene.shaderWater, "uMaterial.ambient", sScene.water.material.front().ambient);
+        shaderUniform(sScene.shaderWater, "uMaterial.specular", sScene.water.material.front().specular);
 
         glBindVertexArray(sScene.water.mesh.vao);
         glDrawElements(GL_TRIANGLES, sScene.water.material.front().indexCount, GL_UNSIGNED_INT, (const void *)(sScene.water.material.front().indexOffset * sizeof(unsigned int)));
