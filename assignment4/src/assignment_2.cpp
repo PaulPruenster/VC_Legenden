@@ -148,7 +148,7 @@ Vector3D getLightColor()
 {
     if (sScene.isDay)
         return Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f);
-    return Vector3D(20 / 255.0f, 10 / 255.0f, 10 / 255.0f);
+    return Vector3D(69 / 255.0f, 69 / 255.0f, 69 / 255.0f);
 }
 
 void render()
@@ -160,6 +160,8 @@ void render()
     shaderUniform(sScene.shaderBoat, "uProj", proj);
     shaderUniform(sScene.shaderBoat, "uView", view);
     shaderUniform(sScene.shaderBoat, "uModel", sScene.boat.transformation);
+
+    shaderUniform(sScene.shaderBoat, "isDay", sScene.isDay);
 
     shaderUniform(sScene.shaderBoat, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
     shaderUniform(sScene.shaderBoat, "cameraPosition", sScene.camera.position);
@@ -196,6 +198,8 @@ void render()
         shaderUniform(sScene.shaderWater, "cameraPosition", sScene.camera.position);
         shaderUniform(sScene.shaderWater, "uDirectionalLight.color", getLightColor());
 
+        shaderUniform(sScene.shaderWater, "isDay", sScene.isDay);
+
         shaderUniform(sScene.shaderWater, "uWaterSim.accumTime", sScene.waterSim.accumTime);
         for (int i = 0; i < 3; i++)
         {
@@ -224,7 +228,11 @@ void render()
 
 void sceneDraw()
 {
-    glClearColor(135.0 / 255, 206.0 / 255, 235.0 / 255, 1.0);
+    if (sScene.isDay)
+        glClearColor(135.0 / 255, 206.0 / 255, 235.0 / 255, 1.0);
+    else
+        glClearColor(50.0 / 255, 50.0 / 255, 50.0 / 255, 1.0);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /*------------ render scene -------------*/

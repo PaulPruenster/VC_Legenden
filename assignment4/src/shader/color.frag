@@ -18,6 +18,7 @@ out vec4 FragColor;
 uniform Material uMaterial;
 uniform DirectionalLight uDirectionalLight;
 uniform vec3 cameraPosition;
+uniform bool isDay;
 
 in vec3 tNormal;
 in vec3 tFragPos;
@@ -43,5 +44,6 @@ void main(void)
 
     // Combine diffuse and specular components
     vec3 result = ambient + diffuse + specular;
+    if (!isDay) result *= 0.4;
     FragColor = vec4(result, 1.0);
 }
