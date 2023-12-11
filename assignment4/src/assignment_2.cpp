@@ -152,6 +152,14 @@ Vector3D getLightColor()
     return Vector3D(31 / 255.0f, 31 / 255.0f, 31 / 255.0f);
 }
 
+Vector3D getLightPosition(Vector3D lighOffset)
+{
+    Vector4D offsetHomogeneous = Vector4D(lighOffset.x, lighOffset.y, lighOffset.z, 1);
+    Vector4D offsetWorld = sScene.boat.transformation * offsetHomogeneous;
+    Vector3D offset = Vector3D(offsetWorld.x, offsetWorld.y, offsetWorld.z);
+    return offset;
+}
+
 void render()
 {
     /* setup camera and model matrices */
@@ -168,21 +176,23 @@ void render()
     shaderUniform(sScene.shaderBoat, "cameraPosition", sScene.camera.position);
     shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", getLightColor());
 
+    Vector3D lightPosition_green = getLightPosition(Vector3D(0.5f, 2.0f, -1.5f));
+    Vector3D lightPosition_red = getLightPosition(Vector3D(-0.5f, 2.0f, -1.5f));
+    Vector3D lightPosition_white = getLightPosition(Vector3D(-0.5f, 2.0f, -0.1f));
+    Vector3D lightPosition_white2 = getLightPosition(Vector3D(0.5f, 2.0f, -0.1f));
 
-    // Add point light sources with decaying intensity
-    // print a var to the terminal
-    // Front light source left
-        shaderUniform(sScene.shaderBoat, "uPointLights[0].position", sScene.boat.position + Vector3D(0.5f, 2.0f, -1.5f));
-        shaderUniform(sScene.shaderBoat, "uPointLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
+    
+    shaderUniform(sScene.shaderBoat, "uPointLights[0].position", lightPosition_green);
+    shaderUniform(sScene.shaderBoat, "uPointLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
 
-        shaderUniform(sScene.shaderBoat, "uPointLights[1].position", sScene.boat.position + Vector3D(-0.5f, 2.0f, -1.5f));
-        shaderUniform(sScene.shaderBoat, "uPointLights[1].color", Vector3D(1.0f, 0.0f, 0.0f));
+    shaderUniform(sScene.shaderBoat, "uPointLights[1].position", lightPosition_red);
+    shaderUniform(sScene.shaderBoat, "uPointLights[1].color", Vector3D(1.0f, 0.0f, 0.0f));
 
-        shaderUniform(sScene.shaderBoat, "uPointLights[2].position", sScene.boat.position + Vector3D(-0.5f, 2.0f, -0.1f));
-        shaderUniform(sScene.shaderBoat, "uPointLights[2].color", Vector3D(1.0f, 1.0f, 1.0f));
+    shaderUniform(sScene.shaderBoat, "uPointLights[2].position", lightPosition_white);
+    shaderUniform(sScene.shaderBoat, "uPointLights[2].color", Vector3D(1.0f, 1.0f, 1.0f));
 
-        shaderUniform(sScene.shaderBoat, "uPointLights[3].position", sScene.boat.position + Vector3D(0.5f, 2.0f, -0.1f));
-        shaderUniform(sScene.shaderBoat, "uPointLights[3].color", Vector3D(1.0f, 1.0f, 1.0f));
+    shaderUniform(sScene.shaderBoat, "uPointLights[3].position", lightPosition_white2);
+    shaderUniform(sScene.shaderBoat, "uPointLights[3].color", Vector3D(1.0f, 1.0f, 1.0f));
 
 
     for (unsigned int i = 0; i < sScene.boat.partModel.size(); i++)
@@ -217,16 +227,16 @@ void render()
         shaderUniform(sScene.shaderWater, "cameraPosition", sScene.camera.position);
         shaderUniform(sScene.shaderWater, "uDirectionalLight.color", getLightColor());
 
-        shaderUniform(sScene.shaderWater, "uPointLights[0].position", sScene.boat.position + Vector3D(0.5f, 2.0f, -1.5f));
+        shaderUniform(sScene.shaderWater, "uPointLights[0].position", lightPosition_green);
         shaderUniform(sScene.shaderWater, "uPointLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
 
-        shaderUniform(sScene.shaderWater, "uPointLights[1].position", sScene.boat.position + Vector3D(-0.5f, 2.0f, -1.5f));
+        shaderUniform(sScene.shaderWater, "uPointLights[1].position", lightPosition_red);
         shaderUniform(sScene.shaderWater, "uPointLights[1].color", Vector3D(1.0f, 0.0f, 0.0f));
 
-        shaderUniform(sScene.shaderWater, "uPointLights[2].position", sScene.boat.position + Vector3D(-0.5f, 2.0f, -0.1f));
+        shaderUniform(sScene.shaderWater, "uPointLights[2].position", lightPosition_white);
         shaderUniform(sScene.shaderWater, "uPointLights[2].color", Vector3D(1.0f, 1.0f, 1.0f));
 
-        shaderUniform(sScene.shaderWater, "uPointLights[3].position", sScene.boat.position + Vector3D(0.5f, 2.0f, -0.1f));
+        shaderUniform(sScene.shaderWater, "uPointLights[3].position", lightPosition_white2);
         shaderUniform(sScene.shaderWater, "uPointLights[3].color", Vector3D(1.0f, 1.0f, 1.0f));
 
         shaderUniform(sScene.shaderWater, "isDay", sScene.isDay);
