@@ -14,12 +14,6 @@ struct DirectionalLight
     vec3 color;
 };
 
-struct DecayingPointLight
-{
-    vec3 color;
-    vec3 position;
-};
-
 struct SpotLight
 {
     vec3 direction;
@@ -33,7 +27,6 @@ out vec4 FragColor;
 uniform Material uMaterial;
 uniform DirectionalLight uDirectionalLight;
 uniform vec3 cameraPosition;
-uniform bool isDay;
 
 uniform SpotLight uSpotLights[4];
 
@@ -44,7 +37,7 @@ void main(void)
 {
     float ambientCoefficient = 1.0;
     float diffuseCoefficient = 1.0;
-    float specularCoefficient = 0.5;
+    float specularCoefficient = 1.0;
     
     vec3 globalAmbient = vec3(0.1, 0.1, 0.1);
     vec3 normal = tNormal;
@@ -70,6 +63,8 @@ void main(void)
         float lightDistance = length(lightDirection);
         float intensity = 5.0 / (lightDistance * lightDistance);
         lightDirection = normalize(lightDirection);
+
+        // if fragment is outside of the light cone, we can stop
         if (acos(dot(uSpotLights[i].direction, lightDirection)) > uSpotLights[i].angle) {
             continue;
         }
@@ -89,6 +84,5 @@ void main(void)
     // Combine diffuse and specular components
     vec3 result = ambient + diffuse + specular;
     result = clamp(result, 0.0, 1.0);
-    if (!isDay) result *= 0.9;
     FragColor = vec4(result, 1.0);
 }
