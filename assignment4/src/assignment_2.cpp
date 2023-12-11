@@ -131,7 +131,7 @@ void sceneInit(float width, float height)
     sScene.water = modelLoad("assets/water/water.obj").front();
 
     sScene.shaderBoat = shaderLoad("shader/default.vert", "shader/color.frag");
-    sScene.shaderWater = shaderLoad("shader/water.vert", "shader/water.frag");
+    sScene.shaderWater = shaderLoad("shader/water.vert", "shader/color.frag");
 }
 
 void sceneUpdate(float dt)
@@ -148,6 +148,7 @@ Vector3D getLightColor()
 {
     if (sScene.isDay)
         return Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f);
+    return Vector3D(0 / 255.0f, 0 / 255.0f, 0 / 255.0f);
     return Vector3D(69 / 255.0f, 69 / 255.0f, 69 / 255.0f);
 }
 
@@ -166,6 +167,18 @@ void render()
     shaderUniform(sScene.shaderBoat, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
     shaderUniform(sScene.shaderBoat, "cameraPosition", sScene.camera.position);
     shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", getLightColor());
+
+
+    // Add point light sources with decaying intensity
+    // print a var to the terminal
+    std::cout << (sScene.boat.position + Vector3D(10.0f, 10.0f, 10.0f)) << std::endl;
+    // Front light source left
+    shaderUniform(sScene.shaderBoat, "uPointLights[0].position", sScene.boat.position + Vector3D(0.0f, 5.0f, 0.0f));
+    shaderUniform(sScene.shaderBoat, "uPointLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
+
+
+
+
 
     for (unsigned int i = 0; i < sScene.boat.partModel.size(); i++)
     {
