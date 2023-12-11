@@ -131,7 +131,7 @@ void sceneInit(float width, float height)
     sScene.water = modelLoad("assets/water/water.obj").front();
 
     sScene.shaderBoat = shaderLoad("shader/default.vert", "shader/color.frag");
-    sScene.shaderWater = shaderLoad("shader/water.vert", "shader/water.frag");
+    sScene.shaderWater = shaderLoad("shader/water.vert", "shader/color.frag");
 }
 
 void sceneUpdate(float dt)
@@ -148,6 +148,7 @@ Vector3D getLightColor()
 {
     if (sScene.isDay)
         return Vector3D(255 / 255.0f, 223 / 255.0f, 223 / 255.0f);
+    return Vector3D(0 / 255.0f, 0 / 255.0f, 0 / 255.0f);
     return Vector3D(69 / 255.0f, 69 / 255.0f, 69 / 255.0f);
 }
 
@@ -166,6 +167,23 @@ void render()
     shaderUniform(sScene.shaderBoat, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
     shaderUniform(sScene.shaderBoat, "cameraPosition", sScene.camera.position);
     shaderUniform(sScene.shaderBoat, "uDirectionalLight.color", getLightColor());
+
+
+    // Add point light sources with decaying intensity
+    // print a var to the terminal
+    // Front light source left
+        shaderUniform(sScene.shaderBoat, "uPointLights[0].position", sScene.boat.position + Vector3D(0.5f, 2.0f, -1.5f));
+        shaderUniform(sScene.shaderBoat, "uPointLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
+
+        shaderUniform(sScene.shaderBoat, "uPointLights[1].position", sScene.boat.position + Vector3D(-0.5f, 2.0f, -1.5f));
+        shaderUniform(sScene.shaderBoat, "uPointLights[1].color", Vector3D(1.0f, 0.0f, 0.0f));
+
+        shaderUniform(sScene.shaderBoat, "uPointLights[2].position", sScene.boat.position + Vector3D(-0.5f, 2.0f, -0.1f));
+        shaderUniform(sScene.shaderBoat, "uPointLights[2].color", Vector3D(1.0f, 1.0f, 1.0f));
+
+        shaderUniform(sScene.shaderBoat, "uPointLights[3].position", sScene.boat.position + Vector3D(0.5f, 2.0f, -0.1f));
+        shaderUniform(sScene.shaderBoat, "uPointLights[3].color", Vector3D(1.0f, 1.0f, 1.0f));
+
 
     for (unsigned int i = 0; i < sScene.boat.partModel.size(); i++)
     {
@@ -197,6 +215,18 @@ void render()
         shaderUniform(sScene.shaderWater, "uDirectionalLight.direction", Vector3D(0.0f, -1.0f, 0.0f));
         shaderUniform(sScene.shaderWater, "cameraPosition", sScene.camera.position);
         shaderUniform(sScene.shaderWater, "uDirectionalLight.color", getLightColor());
+
+        shaderUniform(sScene.shaderWater, "uPointLights[0].position", sScene.boat.position + Vector3D(0.5f, 2.0f, -1.5f));
+        shaderUniform(sScene.shaderWater, "uPointLights[0].color", Vector3D(0.0f, 1.0f, 0.0f));
+
+        shaderUniform(sScene.shaderWater, "uPointLights[1].position", sScene.boat.position + Vector3D(-0.5f, 2.0f, -1.5f));
+        shaderUniform(sScene.shaderWater, "uPointLights[1].color", Vector3D(1.0f, 0.0f, 0.0f));
+
+        shaderUniform(sScene.shaderWater, "uPointLights[2].position", sScene.boat.position + Vector3D(-0.5f, 2.0f, -0.1f));
+        shaderUniform(sScene.shaderWater, "uPointLights[2].color", Vector3D(1.0f, 1.0f, 1.0f));
+
+        shaderUniform(sScene.shaderWater, "uPointLights[3].position", sScene.boat.position + Vector3D(0.5f, 2.0f, -0.1f));
+        shaderUniform(sScene.shaderWater, "uPointLights[3].color", Vector3D(1.0f, 1.0f, 1.0f));
 
         shaderUniform(sScene.shaderWater, "isDay", sScene.isDay);
 
