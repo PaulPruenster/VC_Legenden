@@ -55,6 +55,8 @@ void main(void)
         // Calculate diffuse reflection
         float diff = max(dot(normal, lightDir), 0.0);
         vec3 diffuse = uMaterial.diffuse * diff;
+        if (!isDay) diffuse *= 0.4;
+
 
         // Calculate specular reflection (Blinn-Phong model)
         float spec = pow(max(dot(normal, halfVec), 0.0), uMaterial.shininess);
@@ -82,7 +84,6 @@ void main(void)
         specular /= numberOfLights;
         // Combine diffuse and specular components
         vec3 result = ambient + diffuse + specular;
-        if (!isDay) result *= 0.4;
         FragColor = vec4(result, 1.0);
             
 }
