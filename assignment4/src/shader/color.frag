@@ -34,11 +34,15 @@ in vec3 tFragPos;
 
 void main(void)
 {
-        float numberOfLights = 2.0;
+        float numberOfLights = 5.0;
         // Normalize the cross product of the X and Y derivatives
         vec3 dFdx_position = dFdx(tFragPos);
         vec3 dFdy_position = dFdy(tFragPos);
-        vec3 normal = normalize(cross(dFdx_position, dFdy_position));
+
+        vec3 a = vec3(1.0, 0.0, dFdx_position.x);
+        vec3 b = vec3(0.0, 1.0, dFdy_position.x);
+
+        vec3 normal = normalize(cross(a, b));
         normal = tNormal;
         vec3 ambient = 0.3 * uMaterial.ambient;
 
@@ -65,7 +69,7 @@ void main(void)
             vec3 postion_diff = uPointLights[i].position - tFragPos;
             float position_norm = length(postion_diff);
             float intensity = 1.0 / position_norm * position_norm;
-            intensity = 1.0;
+            intensity = 2.0;
             // Calculate the half vector
             vec3 lightDir = normalize(uPointLights[i].position - tFragPos);
             vec3 halfVec = normalize(lightDir + viewDir);
