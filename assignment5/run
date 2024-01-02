@@ -1,0 +1,19 @@
+#!/bin/bash
+
+folder='build'
+assignment_name='assignment_03'
+if [ ! -d "$folder" ]; then
+    echo "$folder folder not found. Creating build folder ..."
+    mkdir "$folder"
+fi
+cd "$folder"
+echo "Building cmake ..."
+cmake ../
+
+echo -e "\nBuilding make ..."
+make
+cd 'bin'
+echo -e "\nExecuting $assignment_name ..."
+./$assignment_name
+
+cd ../..
