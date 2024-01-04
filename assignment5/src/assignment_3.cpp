@@ -6,6 +6,7 @@
 #include "mygl/camera.h"
 #include "mygl/cube_map.h"
 #include "mygl/geometry.h"
+#include "mygl/cube_map.h"
 
 #include "boat.h"
 #include "light.h"
@@ -22,6 +23,8 @@ struct
 
     Boat boat;
 
+    CubeMap cubeMap;
+
     bool renderBlinnPhong;
     bool isDay;
     Light_Directional lightSun;
@@ -31,6 +34,7 @@ struct
     ShaderProgram shaderWaterColor;
     ShaderProgram shaderWater;
     ShaderProgram shaderBlinnPhong;
+    ShaderProgram shaderCubeMap;
 
 } sScene;
 
@@ -148,7 +152,6 @@ void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     cameraUpdateOrbit(sScene.camera, {0, 0}, sScene.zoomSpeedMultiplier * yoffset);
 }
 
-
 void windowResizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -180,6 +183,60 @@ void sceneInit(float width, float height)
     sScene.shaderWaterColor = shaderLoad("shader/water.vert", "shader/color.frag");
     sScene.shaderWater = shaderLoad("shader/water.vert", "shader/blinn_phong.frag");
     sScene.shaderBlinnPhong = shaderLoad("shader/default.vert", "shader/blinn_phong.frag");
+    sScene.shaderCubeMap = shaderLoad("shader/cube_map.vert", "shader/cube_map.frag");
+
+
+
+    std::vector<Vector3D> vertices = {
+    { -100.0f, -100.0f,  100.0f },
+    {  100.0f, -100.0f,  100.0f },
+    {  100.0f,  100.0f,  100.0f },
+    { -100.0f,  100.0f,  100.0f },
+    { -100.0f, -100.0f, -100.0f },
+    {  100.0f, -100.0f, -100.0f },
+    {  100.0f,  100.0f, -100.0f },
+    { -100.0f,  100.0f, -100.0f }
+    };
+
+    // It defines the order in which the vertices should be connected to form triangles
+    std::vector<unsigned int> indices = {
+        // Face 1
+        0, 1, 2, // Triangle 1
+        2, 3, 0, // Triangle 2
+
+        // Face 2
+        4, 5, 6, // Triangle 1
+        6, 7, 4, // Triangle 2
+
+        // Face 3
+        0, 1, 5, // Triangle 1
+        5, 4, 0, // Triangle 2
+
+        // Face 4
+        2, 3, 7, // Triangle 1
+        7, 6, 2, // Triangle 2
+
+        // Face 5
+        0, 3, 7, // Triangle 1
+        7, 4, 0, // Triangle 2
+
+        // Face 6
+        1, 2, 6, // Triangle 1
+        6, 5, 1  // Triangle 2
+    };
+
+
+
+    std::array<std::string, 6> image_paths = {
+        "assets/kloofendal_48d_partly_cloudy/px.png",
+        "assets/kloofendal_48d_partly_cloudy/nx.png",
+        "assets/kloofendal_48d_partly_cloudy/py.png",
+        "assets/kloofendal_48d_partly_cloudy/ny.png",
+        "assets/kloofendal_48d_partly_cloudy/pz.png",
+        "assets/kloofendal_48d_partly_cloudy/nz.png"
+    };
+
+    sScene.cubeMap = cubeMapCreate(vertices, indices, image_paths);
 }
 
 void sceneUpdate(float dt)
@@ -193,9 +250,21 @@ void sceneUpdate(float dt)
 
 void renderBlinnPhong()
 {
+    
     /* setup camera and model matrices */
     Matrix4D proj = cameraProjection(sScene.camera);
     Matrix4D view = cameraView(sScene.camera);
+
+    /*--------------------- render skybox -------------------*/
+    glDepthMask(GL_FALSE);
+    glUseProgram(sScene.shaderCubeMap.id);
+    glActiveTexture(GL_TEXTURE0);
+    shaderUniform(sScene.shaderCubeMap, "uProj",  proj);
+    shaderUniform(sScene.shaderCubeMap, "uView",  view);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, sScene.cubeMap.texture.id);
+    glBindVertexArray(sScene.cubeMap.mesh.vao);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+    glDepthMask(GL_TRUE);
 
     /*--------------------- render boat ---------------------*/
     glUseProgram(sScene.shaderBlinnPhong.id);
