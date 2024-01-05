@@ -261,6 +261,7 @@ void renderBlinnPhong()
     glActiveTexture(GL_TEXTURE0);
     shaderUniform(sScene.shaderCubeMap, "uProj",  proj);
     shaderUniform(sScene.shaderCubeMap, "uView",  view);
+    shaderUniform(sScene.shaderCubeMap, "light_color", Vector4D(sScene.lightSun.color, 1.0));
     glBindTexture(GL_TEXTURE_CUBE_MAP, sScene.cubeMap.texture.id);
     glBindVertexArray(sScene.cubeMap.mesh.vao);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
