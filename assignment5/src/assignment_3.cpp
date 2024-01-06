@@ -178,7 +178,7 @@ void sceneInit(float width, float height)
 
     sScene.shaderColor = shaderLoad("shader/default.vert", "shader/color.frag");
     sScene.shaderWaterColor = shaderLoad("shader/water.vert", "shader/color.frag");
-    sScene.shaderWater = shaderLoad("shader/water.vert", "shader/blinn_phong.frag");
+    sScene.shaderWater = shaderLoad("shader/water.vert", "shader/water.frag");
     sScene.shaderBlinnPhong = shaderLoad("shader/default.vert", "shader/blinn_phong.frag");
 }
 
@@ -202,6 +202,7 @@ void renderBlinnPhong()
     shaderUniform(sScene.shaderBlinnPhong, "uProj",  proj);
     shaderUniform(sScene.shaderBlinnPhong, "uView",  view);
     shaderUniform(sScene.shaderBlinnPhong, "uModel",  sScene.boat.transformation);
+    shaderUniform(sScene.shaderBlinnPhong, "Model",  sScene.boat.transformation);
     shaderUniform(sScene.shaderBlinnPhong, "uViewPos", sScene.camera.position);
 
     /* set light directional source */
@@ -240,6 +241,10 @@ void renderBlinnPhong()
             shaderUniform(sScene.shaderBlinnPhong, "uMaterial.diffuse", material.diffuse);
             shaderUniform(sScene.shaderBlinnPhong, "uMaterial.specular", material.specular);
             shaderUniform(sScene.shaderBlinnPhong, "uMaterial.shininess", material.shininess);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_normal"), material.map_normal.id);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_ambient"), material.map_ambient.id);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_diffuse"), material.map_diffuse.id);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_specular"), material.map_specular.id);
 
             glDrawElements(GL_TRIANGLES, material.indexCount, GL_UNSIGNED_INT, (const void*) (material.indexOffset*sizeof(unsigned int)) );
         }
