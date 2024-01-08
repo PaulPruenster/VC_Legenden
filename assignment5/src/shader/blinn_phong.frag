@@ -73,7 +73,7 @@ void main(void)
 
     vec3 illuminance = uLightSun.ambient * diffuse * ambient;
     
-    vec3 reflectDir = reflect(viewDir, normal);
+    vec3 reflectDir = reflect(-viewDir, normal);
     vec3 skyColor = textureCube(skybox, reflectDir).rgb;
 
     for(int i = 0; i < 4; i++)

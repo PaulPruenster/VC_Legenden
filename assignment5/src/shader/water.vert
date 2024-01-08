@@ -21,6 +21,7 @@ uniform wave_params water_sim[3];
 
 out vec3 tNormal;
 out vec3 tFragPos;
+out vec2 tUV;
 
 float wave_height(vec2 pos, float t, wave_params param)
 {
@@ -52,4 +53,5 @@ void main(void)
     gl_Position = uProj * uView * uModel * vec4(position, 1.0);
     tFragPos = vec3(uModel * vec4(position, 1.0));
     tNormal = mat3(transpose(inverse(uModel))) * normal;
+    tUV = aUV + time * 0.01;
 }

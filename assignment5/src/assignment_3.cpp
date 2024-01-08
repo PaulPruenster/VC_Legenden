@@ -181,7 +181,7 @@ void sceneInit(float width, float height)
 
     sScene.shaderColor = shaderLoad("shader/default.vert", "shader/color.frag");
     sScene.shaderWaterColor = shaderLoad("shader/water.vert", "shader/color.frag");
-    sScene.shaderWater = shaderLoad("shader/water.vert", "shader/water.frag");
+    sScene.shaderWater = shaderLoad("shader/water.vert", "shader/blinn_phong.frag");
     sScene.shaderBlinnPhong = shaderLoad("shader/default.vert", "shader/blinn_phong.frag");
     sScene.shaderCubeMap = shaderLoad("shader/cube_map.vert", "shader/cube_map.frag");
 
@@ -334,8 +334,6 @@ void renderBlinnPhong()
 
         }
     }
-
-    // Cleanup
     glBindTexture(GL_TEXTURE_2D, 0);
 
 
@@ -346,6 +344,7 @@ void renderBlinnPhong()
     shaderUniform(sScene.shaderWater, "uView",  view);
     shaderUniform(sScene.shaderWater, "uViewPos", sScene.camera.position);
     shaderUniform(sScene.shaderWater, "uModel", Matrix4D::identity());
+    shaderUniform(sScene.shaderWater, "Model",  sScene.boat.transformation);
 
     /* set light directional source */
     shaderUniform(sScene.shaderWater, "uLightSun.direction", sScene.lightSun.direction);
@@ -390,8 +389,28 @@ void renderBlinnPhong()
         shaderUniform(sScene.shaderWater, "uMaterial.specular", material.specular);
         shaderUniform(sScene.shaderWater, "uMaterial.shininess", material.shininess);
 
+        // Activate texture units and bind textures for the current object
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, material.map_normal.id);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, material.map_ambient.id);
+
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, material.map_diffuse.id);
+
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, material.map_specular.id);
+
+        glUniform1i(glGetUniformLocation(sScene.shaderWater.id, "map_normal"), 1);
+        glUniform1i(glGetUniformLocation(sScene.shaderWater.id, "map_ambient"), 2);
+        glUniform1i(glGetUniformLocation(sScene.shaderWater.id, "map_diffuse"), 3);
+        glUniform1i(glGetUniformLocation(sScene.shaderWater.id, "map_specular"), 4);
+
         glDrawElements(GL_TRIANGLES, material.indexCount, GL_UNSIGNED_INT, (const void*) (material.indexOffset*sizeof(unsigned int)) );
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
+
 
     /* cleanup opengl state */
     glBindVertexArray(0);
