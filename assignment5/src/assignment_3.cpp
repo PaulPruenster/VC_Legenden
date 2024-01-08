@@ -280,9 +280,6 @@ void renderBlinnPhong()
     shaderUniform(sScene.shaderBlinnPhong, "uLightSun.ambient", sScene.lightSun.ambient);
     shaderUniform(sScene.shaderBlinnPhong, "uLightSun.color", sScene.lightSun.color);
 
-    glActiveTexture(GL_TEXTURE5);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, sScene.cubeMap.texture.id);
-
     /* set boats's spot lights */
     for(int i = 0; i < 4; i++)
     {
@@ -316,22 +313,22 @@ void renderBlinnPhong()
             shaderUniform(sScene.shaderBlinnPhong, "uMaterial.shininess", material.shininess);
             
             // Activate texture units and bind textures for the current object
-            glActiveTexture(GL_TEXTURE0);
+            glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, material.map_normal.id);
 
-            glActiveTexture(GL_TEXTURE1);
+            glActiveTexture(GL_TEXTURE2);
             glBindTexture(GL_TEXTURE_2D, material.map_ambient.id);
 
-            glActiveTexture(GL_TEXTURE2);
+            glActiveTexture(GL_TEXTURE3);
             glBindTexture(GL_TEXTURE_2D, material.map_diffuse.id);
 
-            glActiveTexture(GL_TEXTURE3);
+            glActiveTexture(GL_TEXTURE4);
             glBindTexture(GL_TEXTURE_2D, material.map_specular.id);
 
-            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_normal"), 0);
-            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_ambient"), 1);
-            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_diffuse"), 2);
-            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_specular"), 3);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_normal"), 1);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_ambient"), 2);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_diffuse"), 3);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_specular"), 4);
 
             glDrawElements(GL_TRIANGLES, material.indexCount, GL_UNSIGNED_INT, (const void*) (material.indexOffset*sizeof(unsigned int)) );
 

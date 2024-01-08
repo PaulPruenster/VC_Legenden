@@ -93,7 +93,7 @@ void main(void)
 
     illuminance += uLightSun.color * brdf_blinn_phong(-normalize(uLightSun.direction), viewDir, normal, diffuse, specular, uMaterial.shininess);
 
-    fragColor = vec4(illuminance, 1.0);
+    fragColor = vec4(illuminance + skyColor * 0.1, 1.0);
     // skybox
     // fragColor = vec4((illuminance + skyColor) * uMaterial.diffuse, 1.0);
     //
