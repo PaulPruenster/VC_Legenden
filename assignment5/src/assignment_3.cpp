@@ -241,12 +241,29 @@ void renderBlinnPhong()
             shaderUniform(sScene.shaderBlinnPhong, "uMaterial.diffuse", material.diffuse);
             shaderUniform(sScene.shaderBlinnPhong, "uMaterial.specular", material.specular);
             shaderUniform(sScene.shaderBlinnPhong, "uMaterial.shininess", material.shininess);
-            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_normal"), material.map_normal.id);
-            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_ambient"), material.map_ambient.id);
-            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_diffuse"), material.map_diffuse.id);
-            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_specular"), material.map_specular.id);
+            
+            // Activate texture units and bind textures for the current object
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, material.map_normal.id);
+
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, material.map_ambient.id);
+
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, material.map_diffuse.id);
+
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, material.map_specular.id);
+
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_normal"), 0);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_ambient"), 1);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_diffuse"), 2);
+            glUniform1i(glGetUniformLocation(sScene.shaderBlinnPhong.id, "map_specular"), 3);
 
             glDrawElements(GL_TRIANGLES, material.indexCount, GL_UNSIGNED_INT, (const void*) (material.indexOffset*sizeof(unsigned int)) );
+
+            // Cleanup
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
 
