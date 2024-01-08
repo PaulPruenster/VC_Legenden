@@ -72,12 +72,9 @@ void main(void)
 
 
     vec3 illuminance = uLightSun.ambient * diffuse * ambient;
-    // skybox
+    
     vec3 reflectDir = reflect(viewDir, normal);
-    vec3 skyColor = texture(skybox, reflectDir).rgb;
-
-    vec3 illuminance = uLightSun.ambient * uMaterial.diffuse * uMaterial.ambient;
-    //
+    vec3 skyColor = textureCube(skybox, reflectDir).rgb;
 
     for(int i = 0; i < 4; i++)
     {
@@ -98,7 +95,6 @@ void main(void)
 
     fragColor = vec4(illuminance, 1.0);
     // skybox
-    illuminance += uLightSun.color * brdf_blinn_phong(-normalize(uLightSun.direction), viewDir, normal, uMaterial.diffuse, uMaterial.specular, uMaterial.shininess);
-    fragColor = vec4((illuminance + skyColor) * uMaterial.diffuse, 1.0);
+    // fragColor = vec4((illuminance + skyColor) * uMaterial.diffuse, 1.0);
     //
 }

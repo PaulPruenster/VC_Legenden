@@ -280,6 +280,9 @@ void renderBlinnPhong()
     shaderUniform(sScene.shaderBlinnPhong, "uLightSun.ambient", sScene.lightSun.ambient);
     shaderUniform(sScene.shaderBlinnPhong, "uLightSun.color", sScene.lightSun.color);
 
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, sScene.cubeMap.texture.id);
+
     /* set boats's spot lights */
     for(int i = 0; i < 4; i++)
     {
@@ -332,10 +335,11 @@ void renderBlinnPhong()
 
             glDrawElements(GL_TRIANGLES, material.indexCount, GL_UNSIGNED_INT, (const void*) (material.indexOffset*sizeof(unsigned int)) );
 
-            // Cleanup
-            glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
+
+    // Cleanup
+    glBindTexture(GL_TEXTURE_2D, 0);
 
 
     /*--------------------- render water ---------------------*/
