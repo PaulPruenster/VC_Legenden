@@ -312,7 +312,7 @@ void renderBlinnPhong()
             shaderUniform(sScene.shaderBlinnPhong, "uMaterial.specular", material.specular);
             shaderUniform(sScene.shaderBlinnPhong, "uMaterial.shininess", material.shininess);
             
-            // Activate texture units and bind textures for the current object
+            /* Activate texture units and bind textures for the current object */
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, material.map_normal.id);
 
@@ -334,6 +334,7 @@ void renderBlinnPhong()
 
         }
     }
+    /* cleanup, don't know if needed */
     glBindTexture(GL_TEXTURE_2D, 0);
 
 
@@ -389,7 +390,7 @@ void renderBlinnPhong()
         shaderUniform(sScene.shaderWater, "uMaterial.specular", material.specular);
         shaderUniform(sScene.shaderWater, "uMaterial.shininess", material.shininess);
 
-        // Activate texture units and bind textures for the current object
+        /* Activate texture units and bind textures for the current object*/
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, material.map_normal.id);
 
@@ -409,6 +410,8 @@ void renderBlinnPhong()
 
         glDrawElements(GL_TRIANGLES, material.indexCount, GL_UNSIGNED_INT, (const void*) (material.indexOffset*sizeof(unsigned int)) );
     }
+
+    /* cleanup, don't know if needed */
     glBindTexture(GL_TEXTURE_2D, 0);
 
 
