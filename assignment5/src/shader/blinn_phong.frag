@@ -42,11 +42,16 @@ uniform vec3 uViewPos;
 uniform Light_Directional uLightSun;
 uniform Light_Spot uLightSpots[4];
 uniform Material uMaterial;
+
 uniform mat4 Model;
 uniform sampler2D map_diffuse;
 uniform sampler2D map_specular;
 uniform sampler2D map_normal;
 uniform sampler2D map_ambient;
+
+//skybox
+uniform samplerCube skybox;
+
 
 vec3 brdf_blinn_phong(vec3 lightDir, vec3 viewDir, vec3 normal, vec3 diffuse, vec3 specular, float shininess)
 {
@@ -65,7 +70,14 @@ void main(void)
     vec3 diffuse = texture(map_diffuse, tUV).rgb;
     vec3 specular = texture(map_specular, tUV).rgb;
 
+
     vec3 illuminance = uLightSun.ambient * diffuse * ambient;
+    // skybox
+    vec3 reflectDir = reflect(viewDir, normal);
+    vec3 skyColor = texture(skybox, reflectDir).rgb;
+
+    vec3 illuminance = uLightSun.ambient * uMaterial.diffuse * uMaterial.ambient;
+    //
 
     for(int i = 0; i < 4; i++)
     {
@@ -81,7 +93,12 @@ void main(void)
         illuminance += uLightSpots[i].color * intensity  * attenuation * brdf_blinn_phong(lightDir, viewDir, normal, diffuse, specular, uMaterial.shininess);
     }
 
+
     illuminance += uLightSun.color * brdf_blinn_phong(-normalize(uLightSun.direction), viewDir, normal, diffuse, specular, uMaterial.shininess);
 
     fragColor = vec4(illuminance, 1.0);
+    // skybox
+    illuminance += uLightSun.color * brdf_blinn_phong(-normalize(uLightSun.direction), viewDir, normal, uMaterial.diffuse, uMaterial.specular, uMaterial.shininess);
+    fragColor = vec4((illuminance + skyColor) * uMaterial.diffuse, 1.0);
+    //
 }
