@@ -139,7 +139,7 @@ int main(int argc, char **argv)
                 glm::mat4 proj = cameraProjection(sScene.camera);
                 glm::mat4 view = cameraView(sScene.camera);
                 glm::mat4 model = glm::mat4(1.0f);
-                model = glm::rotate(model, (float)M_PI / 8.0f * t, glm::vec3(0.0f, 1.0f, 0.0f));
+                // model = glm::rotate(model, (float)M_PI / 8.0f * t, glm::vec3(0.0f, 1.0f, 0.0f));
 
                 glUseProgram(sScene.shaderColor.id);
                 shaderUniform(sScene.shaderColor, "uProj", proj);
