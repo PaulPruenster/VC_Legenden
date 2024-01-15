@@ -7,7 +7,7 @@ if [ ! -d "$folder" ]; then
 fi
 cd "$folder"
 echo "Building cmake ..."
-cmake ../
+cmake -DCMAKE_BUILD_TYPE=Debug ../
 echo "Building make ..."
 make
 cd 'bin'
