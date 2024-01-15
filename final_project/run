@@ -1,0 +1,16 @@
+#!/bin/bash
+
+folder='build'
+if [ ! -d "$folder" ]; then
+    echo "$folder older folder not found. Creating build folder ..."
+    mkdir "$folder"
+fi
+cd "$folder"
+echo "Building cmake ..."
+cmake ../
+echo "Building make ..."
+make
+cd 'bin'
+echo "executing assignment_02 ..."
+./assignment_02
+cd ../..
