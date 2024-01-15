@@ -4,14 +4,14 @@
 
 #include <vector>
 
-enum eDataIdx { Position = 0, Normal = 1, UV = 2 };
+enum eDataIdx { Position = 0, Color = 1 };
 
 struct Vertex
 {
-    Vector3D pos;
-    Vector3D normal;
-    Vector2D uv;
+    glm::vec3 pos;
+    glm::vec4 color;
 };
+
 
 struct Mesh
 {
@@ -47,3 +47,12 @@ Mesh meshCreate(const std::vector<Vertex>& vertices, const std::vector<unsigned 
  * @param mesh Mesh to delete.
  */
 void meshDelete(const Mesh& mesh);
+
+/**
+ * @brief Reads a .obj file using the tinyobjloader and loads all shapes contained in the file and creates meshes from it.
+ *
+ * @param filepath Path to .obj file.
+ *
+ * @return Vector of initialized mesh structures that can be drawn with OpenGL.
+ */
+std::vector<Mesh> meshLoadFromObj(const std::string &filepath);

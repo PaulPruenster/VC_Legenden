@@ -1,8 +1,6 @@
 #pragma once
 
-#include <math/vector2d.h>
-#include <math/vector3d.h>
-#include <math/matrix4d.h>
+#include <glm/glm.hpp>
 
 struct Camera
 {
@@ -11,9 +9,9 @@ struct Camera
     float fov;
     float nearPlane;
     float farPlane;
-    Vector3D position;
-    Vector3D lookAt;
-    Vector3D initUp;
+    glm::vec3 position;
+    glm::vec3 lookAt;
+    glm::vec3 initUp;
 };
 
 /**
@@ -30,7 +28,7 @@ struct Camera
  *
  * @return Initialized camera object.
  */
-Camera cameraCreate(float width, float height, float fov, float nearPlane, float farPlane, const Vector3D& initPos, const Vector3D& lookAt = {0, 0, 0}, const Vector3D& initUp = {0, 1, 0});
+Camera cameraCreate(float width, float height, float fov, float nearPlane, float farPlane, const glm::vec3& initPos, const glm::vec3& lookAt = {0, 0, 0}, const glm::vec3& initUp = {0, 1, 0});
 
 /**
  * @brief Get projection matrix from a camera.
@@ -39,7 +37,7 @@ Camera cameraCreate(float width, float height, float fov, float nearPlane, float
  *
  * @return Projection matrix.
  */
-Matrix4D cameraProjection(const Camera& cam);
+glm::mat4 cameraProjection(const Camera& cam);
 
 /**
  * @brief Get view matrix from a camera.
@@ -48,7 +46,7 @@ Matrix4D cameraProjection(const Camera& cam);
  *
  * @return View matrix.
  */
-Matrix4D cameraView(const Camera& cam);
+glm::mat4 cameraView(const Camera& cam);
 
 /**
  * @brief Update camera position on the orbit around the look at point using spherical coordinates.
@@ -58,13 +56,4 @@ Matrix4D cameraView(const Camera& cam);
  * with respect to the look at point.
  * @param zoom Factor to zoom in (-) or out (+) (distance of camera position to look at point is de-/increased).
  */
-void cameraUpdateOrbit(Camera &cam, const Vector2D &mouseDiff, float zoom);
-
-/**
- * @brief Updates camera lookAt and the camera position so that the distance between lookAt and the camera position
- * stays the same.
- *
- * @param cam Camera that gets updated.
- * @param pos New lookAt position.
- */
-void cameraFollow(Camera& cam, const Vector3D& pos);
+void cameraUpdateOrbit(Camera &cam, const glm::vec2 &mouseDiff, float zoom);

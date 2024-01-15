@@ -11,6 +11,6 @@ cmake -DCMAKE_BUILD_TYPE=Debug ../
 echo "Building make ..."
 make
 cd 'bin'
-echo "executing assignment_02 ..."
-./assignment_02
+echo "executing final_project ..."
+./tinyobjloader_demo
 cd ../..

@@ -6,17 +6,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#define to_degrees(x) (x * 180.0 / M_PI)
-#define to_radians(x) (x * M_PI / 180.0)
-
 #include <string>
 
-#include "math/vector2d.h"
-#include "math/vector3d.h"
-#include "math/vector4d.h"
-#include "math/matrix3d.h"
-#include "math/matrix4d.h"
-
+#include <glm/glm.hpp>
 
 /**
  * @brief Create and initialize GLFW window and OpenGL context.

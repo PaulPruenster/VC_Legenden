@@ -1,14 +1,14 @@
 ############################################
-#          VisComp Assignment 2            #
+#          VisComp Minimal OpenGl          #
 #------------------------------------------#
 # @author  Nikolaus Rauch / Stefan Spiss   #
-# @date    08.11.2021                      #
+# @date    15.10.2021                      #
 #------------------------------------------#
 ############################################
 cmake_minimum_required( VERSION 3.2 )
-project( viscomp-assignment-2 )
+project( viscomp-tinyobj )
 
-message("\n * Assignment 2 - Visual Computing ")
+message("\n * Visual Computing Minimal OpenGL Example ")
 message(STATUS "${PROJECT_NAME} build environment --")
 message(STATUS "Build system:     ${CMAKE_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
@@ -17,6 +17,7 @@ message(STATUS "Build system:     ${CMAKE_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCE
 #                Options                #
 #########################################
 option(BUILD_GLFW "Build glfw from source" ON)
+option(BUILD_GLM "Build glm from source" ON)
 
 
 #########################################
@@ -54,6 +55,14 @@ endif()
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL 3.2 REQUIRED)
 
+if(BUILD_GLM)
+  add_subdirectory(external/glm)
+else()
+  find_package(glm REQUIRED)
+endif()
+
+add_subdirectory(external/tinyobjloader)
+
 #########################################
 #            Build Example              #
 #########################################
@@ -64,33 +73,31 @@ file(GLOB_RECURSE SHADER src/*.vert src/*.frag)
 source_group(TREE  ${CMAKE_CURRENT_SOURCE_DIR}
              FILES ${SRC} ${HDR} ${SHADER})
 
-add_executable(assignment_02 ${SRC} ${HDR} ${SHADER})
-target_link_libraries(assignment_02 OpenGL::GL glfw glad stb_image)
-target_include_directories(assignment_02 PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
-target_compile_features(assignment_02 PUBLIC cxx_std_20)
-set_target_properties(assignment_02 PROPERTIES CXX_EXTENSIONS OFF)
-
+add_executable(tinyobjloader_demo ${SRC} ${HDR} ${SHADER})
+target_link_libraries(tinyobjloader_demo OpenGL::GL glfw glad stb_image glm  tinyobjloader)
+target_include_directories(tinyobjloader_demo PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
+target_compile_features(tinyobjloader_demo PUBLIC cxx_std_17)
+set_target_properties(tinyobjloader_demo PROPERTIES CXX_EXTENSIONS OFF)
 
 #########################################
 #            Visual Studio Flavors      #
 #########################################
-set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT assignment_02 )
+set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT tinyobjloader_demo )
 set_target_properties(
-    assignment_02 PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:assignment_02> )
-
+    tinyobjloader_demo PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:tinyobjloader_demo> )
 
 #########################################
 #  Copy Shaders/Assets to build folder  #
 #########################################
-add_custom_target(assignment_02_copy_shader ALL
+add_custom_target(tinyobjloader_demo_copy_shader ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/src/shader
-    $<TARGET_FILE_DIR:assignment_02>/shader
+    $<TARGET_FILE_DIR:tinyobjloader_demo>/shader
     )
 
-add_custom_target(assignment_02_copy_assets ALL
+add_custom_target(tinyobjloader_demo_copy_assets ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:assignment_02>/assets
+    $<TARGET_FILE_DIR:tinyobjloader_demo>/assets
     )

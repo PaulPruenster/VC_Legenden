@@ -43,7 +43,7 @@ void shaderDelete(const ShaderProgram& program);
  * @param name Uniform naem.
  * @param value Value to which the uniform should be set.
  */
-void shaderUniform(ShaderProgram& shader, const std::string& name, const Matrix4D& value);
+void shaderUniform(ShaderProgram& shader, const std::string& name, const glm::mat4& value);
 
 /**
  * @brief Function to set uniform in shader program.
@@ -52,7 +52,7 @@ void shaderUniform(ShaderProgram& shader, const std::string& name, const Matrix4
  * @param name Uniform naem.
  * @param value Value to which the uniform should be set.
  */
-void shaderUniform(ShaderProgram &shader, const std::string &name, const Vector2D& vec);
+void shaderUniform(ShaderProgram& shader, const std::string& name, const glm::vec3& vec);
 
 /**
  * @brief Function to set uniform in shader program.
@@ -61,16 +61,7 @@ void shaderUniform(ShaderProgram &shader, const std::string &name, const Vector2
  * @param name Uniform naem.
  * @param value Value to which the uniform should be set.
  */
-void shaderUniform(ShaderProgram& shader, const std::string& name, const Vector3D& vec);
-
-/**
- * @brief Function to set uniform in shader program.
- *
- * @param shader Shader program.
- * @param name Uniform naem.
- * @param value Value to which the uniform should be set.
- */
-void shaderUniform(ShaderProgram& shader, const std::string& name, const Vector4D& vec);
+void shaderUniform(ShaderProgram& shader, const std::string& name, const glm::vec4& vec);
 
 /**
  * @brief Function to set uniform in shader program.

@@ -5,6 +5,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace detail
 {
     void compile(GLuint handle, const char* source, const int size)
@@ -50,7 +52,7 @@ namespace detail
                 programLog.resize(static_cast<std::size_t>(messageLength));
                 glGetProgramInfoLog(handle, messageLength, nullptr, &programLog[0]);
 
-                std::cerr << "[Shader] ERROR link shaderprogram: \n" << programLog << std::endl;
+                std::cerr << programLog << std::endl;
                 std::cerr.flush();
             }
 
@@ -65,8 +67,6 @@ ShaderProgram shaderCreate(const std::string &vertexSource, const std::string &f
 
     if(!program._vertexID || !program._fragmentID || !program.id)
     {
-        std::cerr << "[Shader] Couldn't create shader program!" << std::endl;
-        std::cerr.flush();
         throw std::runtime_error("[Shader] Couldn't create shader program!");
     }
 
@@ -88,15 +88,11 @@ ShaderProgram shaderLoad(const std::string &vertexPath, const std::string &fragm
 
     if(!vertexFile.is_open())
     {
-        std::cerr << "[Shader] Couldn't open vertex shader file at " << std::endl;
-        std::cerr.flush();
         throw std::runtime_error("[Shader] Couldn't open vertex shader file at " + vertexPath);
     }
 
     if(!fragmentFile.is_open())
     {
-        std::cerr << "[Shader] Couldn't open fragment shader file at " << std::endl;
-        std::cerr.flush();
         throw std::runtime_error("[Shader] Couldn't open fragment shader file at " + fragmentPath);
     }
 
@@ -128,8 +124,6 @@ GLint uniform_index(ShaderProgram &shader, const std::string &name)
     GLint index = glGetUniformLocation(shader.id, name.c_str());
     if(index < 0)
     {
-        std::cerr << "[Shader] Couldn't set value for uniform " << name << std::endl;
-        std::cerr.flush();
         throw std::runtime_error("[Shader] Couldn't set value for uniform " + name);
     }
 
@@ -138,10 +132,10 @@ GLint uniform_index(ShaderProgram &shader, const std::string &name)
 
 }
 
-void shaderUniform(ShaderProgram &shader, const std::string &name, const Matrix4D& value)
+void shaderUniform(ShaderProgram &shader, const std::string &name, const glm::mat4& value)
 {
     GLint index = detail::uniform_index(shader, name);
-    glUniformMatrix4fv(index, 1, GL_FALSE, value.ptr());
+    glUniformMatrix4fv(index, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void shaderUniform(ShaderProgram &shader, const std::string &name, int value)
@@ -150,20 +144,13 @@ void shaderUniform(ShaderProgram &shader, const std::string &name, int value)
     glUniform1i(index, value);
 }
 
-void shaderUniform(ShaderProgram &shader, const std::string &name, const Vector2D& vec)
-{
-    GLint index = detail::uniform_index(shader, name);
-    glUniform2f(index, vec.x, vec.y);
-}
-
-
-void shaderUniform(ShaderProgram &shader, const std::string &name, const Vector3D& vec)
+void shaderUniform(ShaderProgram &shader, const std::string &name, const glm::vec3& vec)
 {
     GLint index = detail::uniform_index(shader, name);
     glUniform3f(index, vec.x, vec.y, vec.z);
 }
 
-void shaderUniform(ShaderProgram &shader, const std::string &name, const Vector4D& vec)
+void shaderUniform(ShaderProgram &shader, const std::string &name, const glm::vec4& vec)
 {
     GLint index = detail::uniform_index(shader, name);
 
