@@ -27,8 +27,10 @@ Mesh meshCreate(const std::vector<Vertex> &vertices, const std::vector<unsigned 
 
         glEnableVertexAttribArray(eDataIdx::Position);
         glEnableVertexAttribArray(eDataIdx::Color);
+        glEnableVertexAttribArray(eDataIdx::UV);
         glVertexAttribPointer(eDataIdx::Position,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, pos));
         glVertexAttribPointer(eDataIdx::Color,      4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, color));
+        glVertexAttribPointer(eDataIdx::UV,         2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, uv));
         glCheckError();
     }
 
@@ -80,6 +82,7 @@ std::vector<Mesh> meshLoadFromObj(const std::string &filepath) {
             // Loop over vertices in the face, create vertex data as used in our mesh and add indices to vertices.
             for (size_t v = 0; v < 3; v++) {
                 unsigned int idx = shapes[s].mesh.indices[indexOffset + v].vertex_index;
+                unsigned int uvIdx = shapes[s].mesh.indices[indexOffset + v].texcoord_index;
 
                 vertices.push_back({
                         {
@@ -87,7 +90,11 @@ std::vector<Mesh> meshLoadFromObj(const std::string &filepath) {
                             attrib.vertices[3 * idx + 1],
                             attrib.vertices[3 * idx + 2]
                         }, 
-                        faceColor
+                        faceColor,
+                        {
+                            attrib.texcoords[2 * uvIdx],
+                            attrib.texcoords[2 * uvIdx + 1]
+                        }
                 });
 
                 indices.push_back(indexOffset + v);

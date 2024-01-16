@@ -4,6 +4,7 @@
 #include "mygl/shader.h"
 #include "mygl/mesh.h"
 #include "mygl/camera.h"
+#include "mygl/texture.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -11,6 +12,7 @@ struct
 {
     Camera camera;
     std::vector<Mesh> meshes;
+    Texture texture_map;
     int rendermode = 0;
 
     ShaderProgram shaderColor;
@@ -112,6 +114,9 @@ int main(int argc, char **argv)
     /* load obj file and create opengl buffers for meshes */
     sScene.meshes = meshLoadFromObj("assets/Lowpoly_City_Free_Pack.obj");
 
+    /* load textures*/
+    sScene.texture_map = textureLoad("assets/Palette.jpg");
+
     /* load shader from file */
     sScene.shaderColor = shaderLoad("shader/default.vert", "shader/color.frag");
 
@@ -145,6 +150,10 @@ int main(int argc, char **argv)
                 shaderUniform(sScene.shaderColor, "uProj", proj);
                 shaderUniform(sScene.shaderColor, "uView", view);
                 shaderUniform(sScene.shaderColor, "uModel", model);
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, sScene.texture_map.id);
+                glUniform1i(glGetUniformLocation(sScene.shaderColor.id, "textureMap"), 0);
 
                 /* draw all meshes loaded from obj file */
                 for (unsigned int m = 0; m < sScene.meshes.size(); m++)
