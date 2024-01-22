@@ -227,6 +227,7 @@ int main(int argc, char **argv)
                 glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
 
                 // glClearColor(1.0, 1.0, 1.0, 1.0);
+                glClearColor(0.39, 0.77, 0.85, 1.0);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 glUseProgram(sScene.shaderColor.id);
