@@ -158,7 +158,6 @@ int main(int argc, char **argv)
         return false;
 
     // Get a handle for our "MVP" uniform
-    GLuint MatrixID = glGetUniformLocation(sScene.shaderColor.id, "MVP");
     GLuint DepthBiasID = glGetUniformLocation(sScene.shaderColor.id, "DepthBiasMVP");
     GLuint ShadowMapID = glGetUniformLocation(sScene.shaderColor.id, "shadowMap");
 
@@ -174,9 +173,7 @@ int main(int argc, char **argv)
         /*------------ default frambuffer -------------*/
         {
             // Render to our framebuffer
-            // print FramebufferName
             glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-            // glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glViewport(0, 0, 1024, 1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
             // We don't use bias in the shader, but instead we draw back faces,
@@ -188,7 +185,6 @@ int main(int argc, char **argv)
             glClearColor(1.0, 1.0, 1.0, 1.0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            // Use our shader
             glUseProgram(sScene.shadowShader.id);
 
             glm::vec3 lightInvDir = glm::vec3(0.5f, 2, 2);
@@ -205,7 +201,6 @@ int main(int argc, char **argv)
             glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 
             // Send our transformation to the currently bound shader,
-            // in the "MVP" uniform
             glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
 
             for (unsigned int m = 0; m < sScene.meshes.size(); m++)
@@ -231,12 +226,10 @@ int main(int argc, char **argv)
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 glUseProgram(sScene.shaderColor.id);
-                // Clear the screen
                 /* setup camera and model matrices */
                 glm::mat4 proj = cameraProjection(sScene.camera);
                 glm::mat4 view = cameraView(sScene.camera);
                 glm::mat4 model = glm::mat4(1.0f);
-                glm::mat4 MVP = proj * view * model;
 
                 glm::mat4 biasMatrix(
                     0.5, 0.0, 0.0, 0.0,
@@ -246,7 +239,6 @@ int main(int argc, char **argv)
 
                 glm::mat4 depthBiasMVP = biasMatrix * depthMVP;
 
-                glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
                 glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
 
                 glUseProgram(sScene.shaderColor.id);
@@ -275,7 +267,6 @@ int main(int argc, char **argv)
             glBindVertexArray(0);
             glUseProgram(0);
         }
-        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         /* swap front and back buffer */
         glfwSwapBuffers(window);
@@ -284,10 +275,13 @@ int main(int argc, char **argv)
     /*-------- cleanup --------*/
     /* delete opengl shader and buffers */
     shaderDelete(sScene.shaderColor);
+    shaderDelete(sScene.shadowShader);
     for (unsigned int m = 0; m < sScene.meshes.size(); m++)
     {
         meshDelete(sScene.meshes[m]);
     }
+    /* delete texture */
+    textureDelete(sScene.texture_map);
 
     /* destroy window/context */
     windowDelete(window);
