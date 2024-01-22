@@ -34,7 +34,7 @@ void main(void)
 	float bias = 0.005;
 	float visibility = 1.0;
 	for (int i=0;i<4;i++){
-        visibility -= 0.2*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[i]/1000.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
+        visibility -= 0.18*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[i]/1500.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
     }
 
 	FragColor = vec4(visibility * MaterialDiffuseColor * LightColor, 1.0);
