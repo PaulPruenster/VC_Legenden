@@ -13,10 +13,23 @@ out vec4 tColor;
 out vec3 tNormal;
 out vec2 tUV;
 
+uniform mat4 MVP;
+uniform mat4 DepthBiasMVP;
+out vec4 ShadowCoord;
+
 void main(void)
 {
     gl_Position = uProj * uView * uModel * vec4(aPosition, 1.0);
     tColor = aColor;
     tNormal = aNormal;
     tUV = aUV;
+
+
+
+    //gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
+	
+	ShadowCoord = DepthBiasMVP * vec4(aPosition,1);
+	
+	// UV of the vertex. No special space for this one.
+	//UV = vertexUV;
 }
