@@ -1,9 +1,11 @@
 #version 330 core
 
-// Ouput data
-layout(location = 0) out float fragmentdepth;
+in vec4 tColor;
+in vec2 tUV;
+out vec4 FragColor;
+uniform sampler2D textureMap;
 
-void main(){
-    // Not really needed, OpenGL does it anyway
-    fragmentdepth = gl_FragCoord.z;
+void main(void)
+{
+    FragColor = vec4(texture(textureMap, tUV).rgb , 1.0);
 }

@@ -9,15 +9,13 @@ uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProj;
 
-uniform mat4 depthMVP;
-
 out vec4 tColor;
 out vec3 tNormal;
 out vec2 tUV;
 
 void main(void)
 {
-    gl_Position = depthMVP * uProj * uView * uModel * vec4(aPosition, 1.0);
+    gl_Position = uProj * uView * uModel * vec4(aPosition, 1.0);
     tColor = aColor;
     tNormal = aNormal;
     tUV = aUV;
