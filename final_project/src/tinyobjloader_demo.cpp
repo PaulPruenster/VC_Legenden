@@ -22,9 +22,11 @@ struct
 
     int shadowMode = 0;
     bool showShadow = false;
-	bool addBias = false;
-	bool showAntiAliasing = false;
+    bool addBias = false;
+    bool showAntiAliasing = false;
     bool showStratified = false;
+
+    bool rotateLight = true;
 } sScene;
 
 struct
@@ -44,9 +46,9 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     }
 
     /* make screenshot and save in work directory */
-    if (key == GLFW_KEY_P && action == GLFW_PRESS)
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
     {
-        screenshotToPNG("screenshot.png");
+        sScene.rotateLight = !sScene.rotateLight;
     }
 
     if (key == GLFW_KEY_1 && action == GLFW_PRESS)
@@ -64,21 +66,21 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         {
             sScene.showShadow = true;
             sScene.addBias = false;
-            sScene.showAntiAliasing = false;    
+            sScene.showAntiAliasing = false;
             sScene.showStratified = false;
         }
         else if (sScene.shadowMode == 2)
         {
             sScene.showShadow = true;
             sScene.addBias = true;
-            sScene.showAntiAliasing = false;   
-            sScene.showStratified = false; 
+            sScene.showAntiAliasing = false;
+            sScene.showStratified = false;
         }
         else if (sScene.shadowMode == 3)
         {
             sScene.showShadow = true;
             sScene.addBias = true;
-            sScene.showAntiAliasing = true;    
+            sScene.showAntiAliasing = true;
             sScene.showStratified = false;
         }
         else
@@ -89,7 +91,6 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
             sScene.showStratified = true;
         }
     }
-
 
     /* switch render mode (polygons, wireframe, vertex points) */
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
@@ -218,7 +219,9 @@ int main(int argc, char **argv)
     {
         /* poll and process input and window events */
         glfwPollEvents();
-        t += 1.0 / 60.0f;
+
+        if (sScene.rotateLight)
+            t += 1.0 / 60.0f;
 
         /*------------ default frambuffer -------------*/
         {
