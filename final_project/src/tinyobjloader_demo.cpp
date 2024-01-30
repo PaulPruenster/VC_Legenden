@@ -8,7 +8,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-const int FAC = 1;
+const int FAC = 4;
 
 struct
 {
