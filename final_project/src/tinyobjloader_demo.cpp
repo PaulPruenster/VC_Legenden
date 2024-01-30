@@ -19,6 +19,11 @@ struct
 
     ShaderProgram shaderColor;
     ShaderProgram shadowShader;
+
+    int shadowMode = 0;
+    bool showShadow = false;
+	bool addBias = false;
+	bool showAntiAliasing = false;
 } sScene;
 
 struct
@@ -42,6 +47,37 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     {
         screenshotToPNG("screenshot.png");
     }
+
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+    {
+        sScene.shadowMode = (sScene.shadowMode + 1) % 4;
+
+        if (sScene.shadowMode == 0)
+        {
+            sScene.showShadow = false;
+            sScene.addBias = false;
+            sScene.showAntiAliasing = false;
+        }
+        else if (sScene.shadowMode == 1)
+        {
+            sScene.showShadow = true;
+            sScene.addBias = false;
+            sScene.showAntiAliasing = false;    
+        }
+        else if (sScene.shadowMode == 2)
+        {
+            sScene.showShadow = true;
+            sScene.addBias = true;
+            sScene.showAntiAliasing = false;    
+        }
+        else
+        {
+            sScene.showShadow = true;
+            sScene.addBias = true;
+            sScene.showAntiAliasing = true;
+        }
+    }
+
 
     /* switch render mode (polygons, wireframe, vertex points) */
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
@@ -247,6 +283,10 @@ int main(int argc, char **argv)
                 shaderUniform(sScene.shaderColor, "uProj", proj);
                 shaderUniform(sScene.shaderColor, "uView", view);
                 shaderUniform(sScene.shaderColor, "uModel", model);
+
+                shaderUniform(sScene.shaderColor, "showShadow", sScene.showShadow);
+                shaderUniform(sScene.shaderColor, "addBias", sScene.addBias);
+                shaderUniform(sScene.shaderColor, "showAntiAliasing", sScene.showAntiAliasing);
 
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, sScene.texture_map.id);

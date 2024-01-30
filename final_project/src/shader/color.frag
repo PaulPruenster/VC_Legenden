@@ -9,6 +9,10 @@ out vec4 FragColor;
 uniform sampler2D textureMap;
 uniform sampler2DShadow shadowMap;
 
+uniform bool showShadow;
+uniform bool addBias;
+uniform bool showAntiAliasing;
+
 float random(vec4 seed4) {
 	float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
     return fract(sin(dot_product) * 43758.5453);
@@ -30,12 +34,22 @@ void main(void)
 	vec2( -0.094184101, -0.92938870 ),
 	vec2( 0.34495938, 0.29387760 )
 	);
-
-	float bias = 0.005;
+	float bias = 0.000;
+	if (addBias){
+		bias = 0.005;
+	}
+	
 	float visibility = 1.0;
-	for (int i=0;i<4;i++){
-        visibility -= 0.18*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[i]/1500.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
-    }
+	if (showShadow){
+		visibility -= 0.8*(1.0-texture( shadowMap, vec3(ShadowCoord.xy,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
+		if (showAntiAliasing){
+			visibility = 1.0;
+			for (int i=0;i<4;i++){
+		        visibility -= 0.18*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[i]/1500.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
+		    }
+		}
+
+	}
 
 	FragColor = vec4(visibility * MaterialDiffuseColor * LightColor, 1.0);
 }
