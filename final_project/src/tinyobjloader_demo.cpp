@@ -225,7 +225,7 @@ int main(int argc, char **argv)
 
             glUseProgram(sScene.shadowShader.id);
 
-            glm::vec3 lightInvDir = glm::vec3(0.5f, 2, 2);
+            glm::vec3 lightInvDir = glm::vec3(cos(0.2 * t), 1, sin(0.2 * t));
 
             // Compute the MVP matrix from the light's point of view
             glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
