@@ -8,7 +8,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-const int FAC = 4;
+const int FAC = 1;
 
 struct
 {
@@ -24,6 +24,7 @@ struct
     bool showShadow = false;
 	bool addBias = false;
 	bool showAntiAliasing = false;
+    bool showStratified = false;
 } sScene;
 
 struct
@@ -50,31 +51,42 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
     if (key == GLFW_KEY_1 && action == GLFW_PRESS)
     {
-        sScene.shadowMode = (sScene.shadowMode + 1) % 4;
+        sScene.shadowMode = (sScene.shadowMode + 1) % 5;
 
         if (sScene.shadowMode == 0)
         {
             sScene.showShadow = false;
             sScene.addBias = false;
             sScene.showAntiAliasing = false;
+            sScene.showStratified = false;
         }
         else if (sScene.shadowMode == 1)
         {
             sScene.showShadow = true;
             sScene.addBias = false;
             sScene.showAntiAliasing = false;    
+            sScene.showStratified = false;
         }
         else if (sScene.shadowMode == 2)
         {
             sScene.showShadow = true;
             sScene.addBias = true;
-            sScene.showAntiAliasing = false;    
+            sScene.showAntiAliasing = false;   
+            sScene.showStratified = false; 
+        }
+        else if (sScene.shadowMode == 3)
+        {
+            sScene.showShadow = true;
+            sScene.addBias = true;
+            sScene.showAntiAliasing = true;    
+            sScene.showStratified = false;
         }
         else
         {
             sScene.showShadow = true;
             sScene.addBias = true;
             sScene.showAntiAliasing = true;
+            sScene.showStratified = true;
         }
     }
 
@@ -287,6 +299,7 @@ int main(int argc, char **argv)
                 shaderUniform(sScene.shaderColor, "showShadow", sScene.showShadow);
                 shaderUniform(sScene.shaderColor, "addBias", sScene.addBias);
                 shaderUniform(sScene.shaderColor, "showAntiAliasing", sScene.showAntiAliasing);
+                shaderUniform(sScene.shaderColor, "showStratified", sScene.showStratified);
 
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, sScene.texture_map.id);
