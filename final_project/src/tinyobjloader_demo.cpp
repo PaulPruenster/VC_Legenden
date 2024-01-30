@@ -8,6 +8,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+const int FAC = 4;
+
 struct
 {
     Camera camera;
@@ -139,7 +141,7 @@ int main(int argc, char **argv)
     GLuint depthTexture;
     glGenTextures(1, &depthTexture);
     glBindTexture(GL_TEXTURE_2D, depthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, FAC * 1024, FAC * 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -174,7 +176,7 @@ int main(int argc, char **argv)
         {
             // Render to our framebuffer
             glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-            glViewport(0, 0, 1024, 1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+            glViewport(0, 0, FAC * 1024, FAC * 1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
             // We don't use bias in the shader, but instead we draw back faces,
             // which are already separated from the front faces by a small distance
