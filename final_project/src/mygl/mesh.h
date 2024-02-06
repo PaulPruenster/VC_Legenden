@@ -4,12 +4,12 @@
 
 #include <vector>
 
-enum eDataIdx { Position = 0, Color = 1, UV = 3 };
+enum eDataIdx { Position = 0, Color = 1, Normal = 2, UV = 3 };
 
 struct Vertex
 {
     glm::vec3 pos;
-    glm::vec4 color;
+    glm::vec3 normal;
     glm::vec2 uv;
 };
 

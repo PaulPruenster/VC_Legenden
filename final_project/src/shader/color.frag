@@ -26,46 +26,45 @@ float random(vec3 seed, int i){
 
 void main(void)
 {
-    //FragColor = vec4(texture(textureMap, tUV).rgb , 1.0);
-
-    	// Light emission properties
 	vec3 LightColor = vec3(1,1,1);
 	
-	// Material properties
 	vec3 MaterialDiffuseColor = texture( textureMap, tUV ).rgb;
-	vec2 poissonDisk[4] = vec2[](
+	
+	// hard coded poissonDisc samples
+	vec2 poissonDisc[4] = vec2[](
 	vec2( -0.94201624, -0.39906216 ),
 	vec2( 0.94558609, -0.76890725 ),
 	vec2( -0.094184101, -0.92938870 ),
 	vec2( 0.34495938, 0.29387760 )
 	);
+
 	float bias = 0.000;
 	if (addBias){
 		if (addDynamicBias){
-			float cosTheta = clamp(dot(tNormal, uLightDir), 0, 1.0);
-			bias = 0.001*tan(acos(cosTheta));
-			bias = clamp(bias, 0,0.02);
+			float theta = acos(clamp(dot(normalize(tNormal), normalize(uLightDir)), -1, 1));
+			bias = 0.005*sin(theta);
 		} else {
 			bias = 0.005;
 		}
 	}
 	
-	int index = 0; 
 	float visibility = 1.0;
 	if (showShadow){
 		if (showAntiAliasing){
+		int index = 0;
 			for (int i=0;i<4;i++){
 				index = i;
+
+				// set index to random value between 0 and 3
 				if (showStratified){
-						index = int(4.0*random(ShadowCoord.xyy, i))%4;
+					index = int(4.0*random(ShadowCoord.xyy, i))%4;
 				}
-				visibility -= 0.18*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[index]/3000.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
+				visibility -= 0.18*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisc[index]/3000.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
 		    }
 		}
 		else {
 			visibility -= 0.18 * 4 *(1.0-texture( shadowMap, vec3(ShadowCoord.xy,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
 		}
-
 	}
 
 	FragColor = vec4(visibility * MaterialDiffuseColor * LightColor, 1.0);

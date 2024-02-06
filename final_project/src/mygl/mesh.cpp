@@ -27,9 +27,11 @@ Mesh meshCreate(const std::vector<Vertex> &vertices, const std::vector<unsigned 
 
         glEnableVertexAttribArray(eDataIdx::Position);
         glEnableVertexAttribArray(eDataIdx::Color);
+        glEnableVertexAttribArray(eDataIdx::Normal);
         glEnableVertexAttribArray(eDataIdx::UV);
         glVertexAttribPointer(eDataIdx::Position,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, pos));
-        glVertexAttribPointer(eDataIdx::Color,      4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, color));
+//        glVertexAttribPointer(eDataIdx::Color,      4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, color));
+        glVertexAttribPointer(eDataIdx::Normal,      3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, normal));
         glVertexAttribPointer(eDataIdx::UV,         2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, uv));
         glCheckError();
     }
@@ -83,14 +85,20 @@ std::vector<Mesh> meshLoadFromObj(const std::string &filepath) {
             for (size_t v = 0; v < 3; v++) {
                 unsigned int idx = shapes[s].mesh.indices[indexOffset + v].vertex_index;
                 unsigned int uvIdx = shapes[s].mesh.indices[indexOffset + v].texcoord_index;
+                unsigned int normalIdx = shapes[s].mesh.indices[indexOffset + v].normal_index;
+
 
                 vertices.push_back({
                         {
                             attrib.vertices[3 * idx],
                             attrib.vertices[3 * idx + 1],
                             attrib.vertices[3 * idx + 2]
-                        }, 
-                        faceColor,
+                        },
+                        {
+                            attrib.normals[3 * normalIdx],
+                            attrib.normals[3 * normalIdx + 1],
+                            attrib.normals[3 * normalIdx + 2]
+                        },
                         {
                             attrib.texcoords[2 * uvIdx],
                             attrib.texcoords[2 * uvIdx + 1]
