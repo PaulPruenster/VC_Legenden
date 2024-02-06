@@ -73,19 +73,19 @@ file(GLOB_RECURSE SHADER src/*.vert src/*.frag)
 source_group(TREE  ${CMAKE_CURRENT_SOURCE_DIR}
              FILES ${SRC} ${HDR} ${SHADER})
 
-add_executable(tinyobjloader_demo ${SRC} ${HDR} ${SHADER})
-target_link_libraries(tinyobjloader_demo OpenGL::GL glfw glad stb_image glm  tinyobjloader)
-target_include_directories(tinyobjloader_demo PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
-target_compile_features(tinyobjloader_demo PUBLIC cxx_std_17)
-set_target_properties(tinyobjloader_demo PROPERTIES CXX_EXTENSIONS OFF)
+add_executable(shadow_mapping ${SRC} ${HDR} ${SHADER})
+target_link_libraries(shadow_mapping OpenGL::GL glfw glad stb_image glm  tinyobjloader)
+target_include_directories(shadow_mapping PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
+target_compile_features(shadow_mapping PUBLIC cxx_std_17)
+set_target_properties(shadow_mapping PROPERTIES CXX_EXTENSIONS OFF)
 
 #########################################
 #            Visual Studio Flavors      #
 #########################################
-set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT tinyobjloader_demo )
+set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT shadow_mapping )
 set_target_properties(
-    tinyobjloader_demo PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:tinyobjloader_demo> )
+    shadow_mapping PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:shadow_mapping> )
 
 #########################################
 #  Copy Shaders/Assets to build folder  #
@@ -93,11 +93,11 @@ set_target_properties(
 add_custom_target(tinyobjloader_demo_copy_shader ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/src/shader
-    $<TARGET_FILE_DIR:tinyobjloader_demo>/shader
+    $<TARGET_FILE_DIR:shadow_mapping>/shader
     )
 
 add_custom_target(tinyobjloader_demo_copy_assets ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:tinyobjloader_demo>/assets
+    $<TARGET_FILE_DIR:shadow_mapping>/assets
     )

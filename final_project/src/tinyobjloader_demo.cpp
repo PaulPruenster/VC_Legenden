@@ -23,6 +23,7 @@ struct
     int shadowMode = 0;
     bool showShadow = false;
     bool addBias = false;
+    bool addDynamicBias = false;
     bool showAntiAliasing = false;
     bool showStratified = false;
 
@@ -46,7 +47,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     }
 
     /* make screenshot and save in work directory */
-    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
         sScene.rotateLight = !sScene.rotateLight;
     }
@@ -59,6 +60,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         {
             sScene.showShadow = false;
             sScene.addBias = false;
+            sScene.addDynamicBias = false;
             sScene.showAntiAliasing = false;
             sScene.showStratified = false;
         }
@@ -90,6 +92,11 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
             sScene.showAntiAliasing = true;
             sScene.showStratified = true;
         }
+    }
+
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+    {
+        sScene.addDynamicBias = not sScene.addDynamicBias;
     }
 
     /* switch render mode (polygons, wireframe, vertex points) */
@@ -240,7 +247,7 @@ int main(int argc, char **argv)
 
             glUseProgram(sScene.shadowShader.id);
 
-            glm::vec3 lightInvDir = glm::vec3(cos(0.2 * t), 1, sin(0.2 * t));
+            glm::vec3 lightInvDir = glm::vec3(cos(0.15 * t), 1, sin(0.15 * t));
 
             // Compute the MVP matrix from the light's point of view
             glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
@@ -295,12 +302,15 @@ int main(int argc, char **argv)
                 glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
 
                 glUseProgram(sScene.shaderColor.id);
+
+                shaderUniform(sScene.shaderColor, "uLightDir", lightInvDir);
                 shaderUniform(sScene.shaderColor, "uProj", proj);
                 shaderUniform(sScene.shaderColor, "uView", view);
                 shaderUniform(sScene.shaderColor, "uModel", model);
 
                 shaderUniform(sScene.shaderColor, "showShadow", sScene.showShadow);
                 shaderUniform(sScene.shaderColor, "addBias", sScene.addBias);
+                shaderUniform(sScene.shaderColor, "addDynamicBias", sScene.addDynamicBias);
                 shaderUniform(sScene.shaderColor, "showAntiAliasing", sScene.showAntiAliasing);
                 shaderUniform(sScene.shaderColor, "showStratified", sScene.showStratified);
 

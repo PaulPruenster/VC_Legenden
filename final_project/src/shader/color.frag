@@ -2,16 +2,19 @@
 
 
 in vec4 tColor;
+in vec3 tNormal;
 in vec2 tUV;
 in vec4 ShadowCoord;
 
 out vec4 FragColor;
 
+uniform vec3 uLightDir;
 uniform sampler2D textureMap;
 uniform sampler2DShadow shadowMap;
 
 uniform bool showShadow;
 uniform bool addBias;
+uniform bool addDynamicBias;
 uniform bool showAntiAliasing;
 uniform bool showStratified;
 
@@ -38,8 +41,15 @@ void main(void)
 	);
 	float bias = 0.000;
 	if (addBias){
-		bias = 0.005;
+		if (addDynamicBias){
+			float cosTheta = clamp(dot(tNormal, uLightDir), 0, 1.0);
+			bias = 0.001*tan(acos(cosTheta));
+			bias = clamp(bias, 0,0.02);
+		} else {
+			bias = 0.005;
+		}
 	}
+	
 	int index = 0; 
 	float visibility = 1.0;
 	if (showShadow){
