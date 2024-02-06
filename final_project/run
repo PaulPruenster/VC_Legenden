@@ -6,11 +6,11 @@ if [ ! -d "$folder" ]; then
     mkdir "$folder"
 fi
 cd "$folder"
-echo "Building cmake ..."
+echo -e "\nBuilding cmake ..."
 cmake -DCMAKE_BUILD_TYPE=Debug ../
-echo "Building make ..."
+echo -e "\nBuilding make ..."
 make
 cd 'bin'
-echo "executing final_project ..."
-./tinyobjloader_demo
+echo -e "\nexecuting final_project ..."
+./shadow_mapping
 cd ../..
