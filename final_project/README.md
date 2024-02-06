@@ -88,8 +88,8 @@ With the key 1, we can switch between following shadow types:
 
 ### Key 2
 
-toggles the dynamic bias on and off.
+Toggles the dynamic bias on and off. Initially it is set to off.
 
 ### Key Space
 
-toggles the light rotation.
+Toggles the light rotation.
