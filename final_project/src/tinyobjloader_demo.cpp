@@ -20,12 +20,12 @@ struct
     ShaderProgram shaderColor;
     ShaderProgram shadowShader;
 
-    int shadowMode = 0;
+    int shadowMode = 0;  // 0: no shadow, 1: shadow, 2: shadow + bias, 3: shadow + bias + anti-aliasing, 4: shadow + bias + anti-aliasing + stratified
     bool showShadow = false;
-    bool addBias = false;
-    bool addDynamicBias = false;
-    bool showAntiAliasing = false;
-    bool showStratified = false;
+    bool addBias = false; // add bias to shadow
+    bool addDynamicBias = false; // add dynamic bias to shadow
+    bool showAntiAliasing = false; // show anti-aliasing
+    bool showStratified = false; // show stratified sampling
 
     bool rotateLight = true;
 } sScene;
@@ -52,6 +52,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         sScene.rotateLight = !sScene.rotateLight;
     }
 
+    // switch shadow mode
     if (key == GLFW_KEY_1 && action == GLFW_PRESS)
     {
         sScene.shadowMode = (sScene.shadowMode + 1) % 5;
@@ -93,7 +94,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
             sScene.showStratified = true;
         }
     }
-
+    // toggle dynamic bias
     if (key == GLFW_KEY_2 && action == GLFW_PRESS)
     {
         sScene.addDynamicBias = not sScene.addDynamicBias;
@@ -155,6 +156,17 @@ void window_resize_callback(GLFWwindow *window, int width, int height)
     sScene.camera.height = height;
 }
 
+void draw_meshes()
+{
+    /* draw all meshes loaded from obj file */
+    for (unsigned int m = 0; m < sScene.meshes.size(); m++)
+    {
+        /* bind vertex array object and draw its content */
+        glBindVertexArray(sScene.meshes[m].vao);
+        glDrawElements(GL_TRIANGLES, sScene.meshes[m].size_ibo, GL_UNSIGNED_INT, nullptr);
+    }
+}
+
 int main(int argc, char **argv)
 {
     /* create window/context */
@@ -190,9 +202,9 @@ int main(int argc, char **argv)
     /* create camera */
     sScene.camera = cameraCreate(1280, 720, glm::radians(45.0), 0.01, 100.0, {0, 5, -10.0});
 
-    GLuint FramebufferName = 0;
-    glGenFramebuffers(1, &FramebufferName);
-    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+    GLuint shadowFramebuffer = 0;
+    glGenFramebuffers(1, &shadowFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, shadowFramebuffer);
 
     GLuint depthTexture;
     glGenTextures(1, &depthTexture);
@@ -212,6 +224,7 @@ int main(int argc, char **argv)
     // No color output in the bound framebuffer, only depth.
     glDrawBuffer(GL_NONE);
 
+    // check that our framebuffer is ok
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         return false;
 
@@ -230,48 +243,49 @@ int main(int argc, char **argv)
         if (sScene.rotateLight)
             t += 1.0 / 60.0f;
 
-        /*------------ default frambuffer -------------*/
         {
-            // Render to our framebuffer
-            glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-            glViewport(0, 0, FAC * 1024, FAC * 1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+            // needed for both shadow and color shader
+            glm::mat4 depthMVP;
+            glm::vec3 lightInvDir;
 
-            // We don't use bias in the shader, but instead we draw back faces,
-            // which are already separated from the front faces by a small distance
-            // (if your geometry is made this way)
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
-
-            glClearColor(1.0, 1.0, 1.0, 1.0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            glUseProgram(sScene.shadowShader.id);
-
-            glm::vec3 lightInvDir = glm::vec3(cos(0.15 * t), 1, sin(0.15 * t));
-
-            // Compute the MVP matrix from the light's point of view
-            glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
-            glm::mat4 depthViewMatrix = glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-            // or, for spot light :
-            // glm::vec3 lightPos(5, 20, 20);
-            // glm::mat4 depthProjectionMatrix = glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f);
-            // glm::mat4 depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir, glm::vec3(0,1,0));
-
-            glm::mat4 depthModelMatrix = glm::mat4(1.0);
-            glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
-
-            // Send our transformation to the currently bound shader,
-            glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
-
-            for (unsigned int m = 0; m < sScene.meshes.size(); m++)
+            /*------------ shadow frambuffer -------------*/
             {
-                /* bind vertex array object and draw its content */
-                glBindVertexArray(sScene.meshes[m].vao);
-                glDrawElements(GL_TRIANGLES, sScene.meshes[m].size_ibo, GL_UNSIGNED_INT, nullptr);
+                // Render to our framebuffer
+                glBindFramebuffer(GL_FRAMEBUFFER, shadowFramebuffer);
+                glViewport(0, 0, FAC * 1024, FAC * 1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+
+                // We don't use bias in the shader, but instead we draw back faces,
+                // which are already separated from the front faces by a small distance
+                // (if your geometry is made this way)
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
+
+                glClearColor(1.0, 1.0, 1.0, 1.0);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                // load the shadow shader
+                glUseProgram(sScene.shadowShader.id);
+
+                lightInvDir = glm::vec3(cos(0.15 * t), 1, sin(0.15 * t));
+
+                // Compute the MVP matrix from the light's point of view
+                glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
+                glm::mat4 depthViewMatrix = glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+                // or, for spot light :
+                // glm::vec3 lightPos(5, 20, 20);
+                // glm::mat4 depthProjectionMatrix = glm::perspective<float>(45.0f, 1.0f, 2.0f, 50.0f);
+                // glm::mat4 depthViewMatrix = glm::lookAt(lightPos, lightPos-lightInvDir, glm::vec3(0,1,0));
+
+                glm::mat4 depthModelMatrix = glm::mat4(1.0);
+                depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+
+                // Send our transformation to the currently bound shader,
+                glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
+
+                draw_meshes();
             }
 
-            /*------------ render cube (color) -------------*/
-            /* use shader and set the uniforms (names match the ones in the shader) */
+            /*------------ normal framebuffer -------------*/
             {
                 // Render to the screen
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -301,6 +315,7 @@ int main(int argc, char **argv)
 
                 glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
 
+                // load the color shader
                 glUseProgram(sScene.shaderColor.id);
 
                 shaderUniform(sScene.shaderColor, "uLightDir", lightInvDir);
@@ -308,6 +323,7 @@ int main(int argc, char **argv)
                 shaderUniform(sScene.shaderColor, "uView", view);
                 shaderUniform(sScene.shaderColor, "uModel", model);
 
+                // pass the options to the shader program, what to show
                 shaderUniform(sScene.shaderColor, "showShadow", sScene.showShadow);
                 shaderUniform(sScene.shaderColor, "addBias", sScene.addBias);
                 shaderUniform(sScene.shaderColor, "addDynamicBias", sScene.addDynamicBias);
@@ -322,13 +338,7 @@ int main(int argc, char **argv)
                 glBindTexture(GL_TEXTURE_2D, depthTexture);
                 glUniform1i(ShadowMapID, 1);
 
-                /* draw all meshes loaded from obj file */
-                for (unsigned int m = 0; m < sScene.meshes.size(); m++)
-                {
-                    /* bind vertex array object and draw its content */
-                    glBindVertexArray(sScene.meshes[m].vao);
-                    glDrawElements(GL_TRIANGLES, sScene.meshes[m].size_ibo, GL_UNSIGNED_INT, nullptr);
-                }
+                draw_meshes();   
             }
 
             /* cleanup opengl state */
